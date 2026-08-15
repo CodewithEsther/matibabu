@@ -1,5 +1,7 @@
 package com.matibabu.backend.domain.patient;
 
+import com.github.f4b6a3.uuid.UuidCreator;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -21,7 +23,7 @@ public class Patient {
             String phoneNumber,
             Gender gender
     ) {
-        this.uuid = UUID.randomUUID();
+        this.uuid = UuidCreator.getTimeOrderedEpoch();
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
