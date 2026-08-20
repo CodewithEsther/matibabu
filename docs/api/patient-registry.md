@@ -82,6 +82,12 @@ Response:
 
 ## Delete Patient
 
-Not implemented in the initial version.
+DELETE /api/patients/{id}
 
-The deletion/archival strategy must be agreed upon before implementation.
+Response:
+
+204 No Content
+
+If the patient does not exist:
+
+404 Not Found

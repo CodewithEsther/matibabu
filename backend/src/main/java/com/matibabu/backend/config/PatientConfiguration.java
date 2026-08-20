@@ -35,4 +35,11 @@ public class PatientConfiguration {
     ) {
         return new UpdatePatientService(patientRepository);
     }
+
+    @Bean
+    public DeletePatientUseCase deletePatientUseCase(
+            PatientRepository patientRepository
+    ) {
+        return new DeletePatientService(patientRepository);
+    }
 }

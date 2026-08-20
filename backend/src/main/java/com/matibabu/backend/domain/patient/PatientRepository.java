@@ -13,4 +13,8 @@ public interface PatientRepository {
     Optional<Patient> findById(UUID id);
 
     Page<Patient> findAll(Pageable pageable);
+
+    boolean existsById(UUID id);
+
+    void deleteById(UUID id);
 }

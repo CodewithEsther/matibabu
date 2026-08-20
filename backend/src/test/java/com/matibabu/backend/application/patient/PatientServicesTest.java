@@ -32,6 +32,7 @@ class PatientServicesTest {
     private GetPatientService getPatientService;
     private ListPatientsService listPatientsService;
     private UpdatePatientService updatePatientService;
+    private DeletePatientService deletePatientService;
 
     @BeforeEach
     void setUp() {
@@ -39,6 +40,7 @@ class PatientServicesTest {
         getPatientService = new GetPatientService(patientRepository);
         listPatientsService = new ListPatientsService(patientRepository);
         updatePatientService = new UpdatePatientService(patientRepository);
+        deletePatientService = new DeletePatientService(patientRepository);
     }
 
     @Test
@@ -141,5 +143,26 @@ class PatientServicesTest {
         ));
         verify(patientRepository).findById(id);
         verify(patientRepository, never()).save(any(Patient.class));
+    }
+
+    @Test
+    void deleteRemovesPatientWhenFound() {
+        UUID id = UUID.randomUUID();
+        when(patientRepository.existsById(id)).thenReturn(true);
+
+        deletePatientService.delete(id);
+
+        verify(patientRepository).existsById(id);
+        verify(patientRepository).deleteById(id);
+    }
+
+    @Test
+    void deleteThrowsExceptionWhenPatientNotFound() {
+        UUID id = UUID.randomUUID();
+        when(patientRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(PatientNotFoundException.class, () -> deletePatientService.delete(id));
+        verify(patientRepository).existsById(id);
+        verify(patientRepository, never()).deleteById(any());
     }
 }

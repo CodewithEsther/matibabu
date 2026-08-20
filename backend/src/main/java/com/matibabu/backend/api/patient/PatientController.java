@@ -1,5 +1,6 @@
 package com.matibabu.backend.api.patient;
 
+import com.matibabu.backend.application.patient.DeletePatientUseCase;
 import com.matibabu.backend.application.patient.GetPatientUseCase;
 import com.matibabu.backend.application.patient.ListPatientsUseCase;
 import com.matibabu.backend.application.patient.RegisterPatientUseCase;
@@ -21,17 +22,20 @@ public class PatientController {
     private final GetPatientUseCase getPatientUseCase;
     private final ListPatientsUseCase listPatientsUseCase;
     private final UpdatePatientUseCase updatePatientUseCase;
+    private final DeletePatientUseCase deletePatientUseCase;
 
     public PatientController(
             RegisterPatientUseCase registerPatientUseCase,
             GetPatientUseCase getPatientUseCase,
             ListPatientsUseCase listPatientsUseCase,
-            UpdatePatientUseCase updatePatientUseCase
+            UpdatePatientUseCase updatePatientUseCase,
+            DeletePatientUseCase deletePatientUseCase
     ) {
         this.registerPatientUseCase = registerPatientUseCase;
         this.getPatientUseCase = getPatientUseCase;
         this.listPatientsUseCase = listPatientsUseCase;
         this.updatePatientUseCase = updatePatientUseCase;
+        this.deletePatientUseCase = deletePatientUseCase;
     }
 
     @PostMapping
@@ -82,5 +86,11 @@ public class PatientController {
                         request.address()
                 )
         );
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deletePatientUseCase.delete(id);
     }
 }

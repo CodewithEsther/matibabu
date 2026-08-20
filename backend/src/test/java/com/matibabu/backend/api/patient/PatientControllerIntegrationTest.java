@@ -110,6 +110,21 @@ class PatientControllerIntegrationTest {
                 .andExpect(jsonPath("$.id").value(patientId))
                 .andExpect(jsonPath("$.phoneNumber").value("+254700000000"))
                 .andExpect(jsonPath("$.address").value("Mombasa"));
+
+        // 6. Delete Patient (DELETE /api/patients/{id})
+        mockMvc.perform(delete("/api/patients/" + patientId))
+                .andExpect(status().isNoContent());
+
+        // 7. Verify Patient no longer exists on GET (404)
+        mockMvc.perform(get("/api/patients/" + patientId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteNonExistentPatientReturns404() throws Exception {
+        UUID nonExistentId = UUID.randomUUID();
+        mockMvc.perform(delete("/api/patients/" + nonExistentId))
+                .andExpect(status().isNotFound());
     }
 
     @Test

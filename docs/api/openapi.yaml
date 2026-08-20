@@ -3,7 +3,7 @@ info:
   title: Matibabu EMR Lite API
   description: |
     REST API for the Matibabu Offline-First EMR Lite system.
-    Provides endpoints for patient registration, retrieval, listing, and updates.
+    Provides endpoints for patient registration, retrieval, listing, updates, and deletion.
   version: 1.0.0
   contact:
     name: Matibabu Development Team
@@ -230,6 +230,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationErrorResponse'
+        '404':
+          description: Patient not found with the specified ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Patient not found with id: 018d3f1a-6379-7a0e-971c-fcae741cfb12"
+
+    delete:
+      tags:
+        - Patients
+      summary: Delete a patient
+      description: Deletes an existing patient record by ID.
+      operationId: deletePatient
+      parameters:
+        - name: id
+          in: path
+          description: Unique patient identifier (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 018d3f1a-6379-7a0e-971c-fcae741cfb12
+      responses:
+        '204':
+          description: Patient successfully deleted
         '404':
           description: Patient not found with the specified ID
           content:
