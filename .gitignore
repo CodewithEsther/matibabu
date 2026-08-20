@@ -15,3 +15,10 @@ backend/target/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Database / SQLite local databases
+*.db
+*.sqlite
+*.sqlite3
+matibabu-local.db
+backend/matibabu-local.db
