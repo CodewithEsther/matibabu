@@ -32,4 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-.matibabu-local.db
+# Database / SQLite local databases
+*.db
+*.sqlite
+*.sqlite3
+matibabu-local.db
