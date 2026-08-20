@@ -33,6 +33,16 @@ public class PatientRepositoryAdapter implements PatientRepository {
     }
 
     @Override
+    public Optional<Patient> findByPhoneNumber(String phoneNumber) {
+        return jpaRepository.findByPhoneNumber(phoneNumber).map(mapper::toDomain);
+    }
+
+    @Override
+    public boolean existsByPhoneNumber(String phoneNumber) {
+        return jpaRepository.existsByPhoneNumber(phoneNumber);
+    }
+
+    @Override
     public Page<Patient> findAll(Pageable pageable) {
         return jpaRepository.findAll(pageable).map(mapper::toDomain);
     }

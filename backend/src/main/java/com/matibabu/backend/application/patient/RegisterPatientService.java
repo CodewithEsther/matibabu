@@ -23,6 +23,10 @@ public class RegisterPatientService implements RegisterPatientUseCase {
             String phoneNumber,
             String address
     ) {
+        if (patientRepository.existsByPhoneNumber(phoneNumber)) {
+            throw new DuplicatePhoneNumberException(phoneNumber);
+        }
+
         Patient patient = new Patient(
                 firstName,
                 lastName,

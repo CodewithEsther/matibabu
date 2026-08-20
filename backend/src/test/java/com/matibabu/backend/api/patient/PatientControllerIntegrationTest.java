@@ -1,6 +1,7 @@
 package com.matibabu.backend.api.patient;
 
 import com.matibabu.backend.api.exception.GlobalExceptionHandler;
+import com.matibabu.backend.infrastructure.persistence.patient.SpringDataPatientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,14 @@ class PatientControllerIntegrationTest {
     @Autowired
     private PatientController patientController;
 
+    @Autowired
+    private SpringDataPatientRepository springDataPatientRepository;
+
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
+        springDataPatientRepository.deleteAll();
         mockMvc = MockMvcBuilders.standaloneSetup(patientController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -170,6 +175,186 @@ class PatientControllerIntegrationTest {
         mockMvc.perform(post("/api/patients")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createPatientWithInvalidPhoneNumberFormatReturns400() throws Exception {
+        String invalidPhoneJson = """
+                {
+                    "firstName": "Alice",
+                    "lastName": "Wambui",
+                    "dateOfBirth": "1998-03-20",
+                    "gender": "FEMALE",
+                    "phoneNumber": "invalid-phone",
+                    "address": "Nakuru"
+                }
+                """;
+
+        mockMvc.perform(post("/api/patients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidPhoneJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updatePatientWithInvalidPhoneNumberFormatReturns400() throws Exception {
+        UUID nonExistentId = UUID.randomUUID();
+        String invalidPhoneJson = """
+                {
+                    "firstName": "Alice",
+                    "lastName": "Wambui",
+                    "dateOfBirth": "1998-03-20",
+                    "gender": "FEMALE",
+                    "phoneNumber": "123",
+                    "address": "Nakuru"
+                }
+                """;
+
+        mockMvc.perform(put("/api/patients/" + nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidPhoneJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createPatientWithDuplicatePhoneNumberReturns409() throws Exception {
+        String patient1 = """
+                {
+                    "firstName": "Unique",
+                    "lastName": "User1",
+                    "dateOfBirth": "1990-01-01",
+                    "gender": "MALE",
+                    "phoneNumber": "+254799111222",
+                    "address": "Eldoret"
+                }
+                """;
+
+        mockMvc.perform(post("/api/patients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patient1))
+                .andExpect(status().isCreated());
+
+        String duplicatePatient = """
+                {
+                    "firstName": "Unique",
+                    "lastName": "User2",
+                    "dateOfBirth": "1992-02-02",
+                    "gender": "FEMALE",
+                    "phoneNumber": "+254799111222",
+                    "address": "Kisii"
+                }
+                """;
+
+        mockMvc.perform(post("/api/patients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(duplicatePatient))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").isNotEmpty());
+    }
+
+    @Test
+    void updatePatientWithDuplicatePhoneNumberReturns409() throws Exception {
+        String p1Json = """
+                {
+                    "firstName": "Patient",
+                    "lastName": "One",
+                    "dateOfBirth": "1990-01-01",
+                    "gender": "MALE",
+                    "phoneNumber": "+254799333444",
+                    "address": "Eldoret"
+                }
+                """;
+        mockMvc.perform(post("/api/patients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(p1Json))
+                .andExpect(status().isCreated());
+
+        String p2Json = """
+                {
+                    "firstName": "Patient",
+                    "lastName": "Two",
+                    "dateOfBirth": "1992-02-02",
+                    "gender": "FEMALE",
+                    "phoneNumber": "+254799555666",
+                    "address": "Kisii"
+                }
+                """;
+        MvcResult p2Result = mockMvc.perform(post("/api/patients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(p2Json))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String responseBody = p2Result.getResponse().getContentAsString();
+        Matcher matcher = Pattern.compile("\"id\"\\s*:\\s*\"([^\"]+)\"").matcher(responseBody);
+        assertTrue(matcher.find());
+        String p2Id = matcher.group(1);
+
+        // Update Patient Two with Patient One's phone number
+        String updateConflictJson = """
+                {
+                    "firstName": "Patient",
+                    "lastName": "Two",
+                    "dateOfBirth": "1992-02-02",
+                    "gender": "FEMALE",
+                    "phoneNumber": "+254799333444",
+                    "address": "Kisii"
+                }
+                """;
+
+        mockMvc.perform(put("/api/patients/" + p2Id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateConflictJson))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").isNotEmpty());
+    }
+
+    @Test
+    void searchPatientByPhoneNumberReturnsPatient() throws Exception {
+        String patientJson = """
+                {
+                    "firstName": "Searchable",
+                    "lastName": "Patient",
+                    "dateOfBirth": "1988-11-11",
+                    "gender": "FEMALE",
+                    "phoneNumber": "+254788777666",
+                    "address": "Nyeri"
+                }
+                """;
+
+        mockMvc.perform(post("/api/patients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patientJson))
+                .andExpect(status().isCreated());
+
+        // Search via query parameter
+        mockMvc.perform(get("/api/patients/search")
+                        .param("phoneNumber", "+254788777666"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value("Searchable"))
+                .andExpect(jsonPath("$.lastName").value("Patient"))
+                .andExpect(jsonPath("$.phoneNumber").value("+254788777666"))
+                .andExpect(jsonPath("$.address").value("Nyeri"));
+
+        // Search via path variable
+        mockMvc.perform(get("/api/patients/phone/+254788777666"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value("Searchable"))
+                .andExpect(jsonPath("$.phoneNumber").value("+254788777666"));
+    }
+
+    @Test
+    void searchPatientByNonExistentPhoneNumberReturns404() throws Exception {
+        mockMvc.perform(get("/api/patients/search")
+                        .param("phoneNumber", "+254700999888"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").isNotEmpty());
+    }
+
+    @Test
+    void searchPatientWithoutPhoneNumberParamReturns400() throws Exception {
+        mockMvc.perform(get("/api/patients/search"))
                 .andExpect(status().isBadRequest());
     }
 }

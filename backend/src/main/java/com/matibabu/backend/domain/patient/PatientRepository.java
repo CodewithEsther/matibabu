@@ -12,6 +12,10 @@ public interface PatientRepository {
 
     Optional<Patient> findById(UUID id);
 
+    Optional<Patient> findByPhoneNumber(String phoneNumber);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
     Page<Patient> findAll(Pageable pageable);
 
     boolean existsById(UUID id);

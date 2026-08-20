@@ -42,4 +42,11 @@ public class PatientConfiguration {
     ) {
         return new DeletePatientService(patientRepository);
     }
+
+    @Bean
+    public SearchPatientByPhoneNumberUseCase searchPatientByPhoneNumberUseCase(
+            PatientRepository patientRepository
+    ) {
+        return new SearchPatientByPhoneNumberService(patientRepository);
+    }
 }

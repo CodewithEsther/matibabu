@@ -5,6 +5,7 @@ import com.matibabu.backend.domain.patient.Patient;
 import com.matibabu.backend.domain.patient.PatientRepository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 public class UpdatePatientService implements UpdatePatientUseCase {
@@ -27,6 +28,11 @@ public class UpdatePatientService implements UpdatePatientUseCase {
     ) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new PatientNotFoundException(id));
+
+        Optional<Patient> existingWithPhone = patientRepository.findByPhoneNumber(phoneNumber);
+        if (existingWithPhone.isPresent() && !existingWithPhone.get().getId().equals(id)) {
+            throw new DuplicatePhoneNumberException(phoneNumber);
+        }
 
         patient.update(
                 firstName,

@@ -23,6 +23,7 @@ public class PatientEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
 
     private String address;

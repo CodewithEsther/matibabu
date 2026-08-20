@@ -29,7 +29,7 @@ The initial patient record contains:
 - Last name
 - Date of birth
 - Gender
-- Phone number
+- Phone number (unique)
 - Address
 - Created timestamp
 - Updated timestamp
@@ -54,7 +54,7 @@ Input:
 - Last name
 - Date of birth
 - Gender
-- Phone number
+- Phone number (unique)
 - Address
 
 Output:
@@ -62,6 +62,8 @@ Output:
 - Created patient
 - Generated patient ID
 - Creation timestamp
+
+If a patient with the given phone number already exists, the operation must fail with a conflict error (409).
 
 ---
 
@@ -79,6 +81,22 @@ Output:
 
 If the patient does not exist, the API must return an appropriate
 not-found response.
+
+---
+
+### Search patient by phone number
+
+Retrieve a patient using their unique phone number.
+
+Input:
+
+- Phone number
+
+Output:
+
+- Patient record
+
+If no patient exists with the provided phone number, the API must return an appropriate not-found response (404).
 
 ---
 
@@ -213,6 +231,7 @@ The REST API is:
 
     POST   /api/patients
     GET    /api/patients/{id}
+    GET    /api/patients/search?phoneNumber={phoneNumber}
     GET    /api/patients
     PUT    /api/patients/{id}
     DELETE /api/patients/{id}
@@ -229,7 +248,8 @@ At minimum:
 - Date of birth must be a valid date.
 - Date of birth must not be in the future.
 - Patient ID must be valid when supplied in a path.
-- Phone number must follow the project's agreed format.
+- Phone number must follow the project's agreed format (`^\+?[0-9]{7,15}$`).
+- Phone number must be unique across all registered patients.
 
 Validation rules must be consistent across the backend.
 
@@ -342,16 +362,20 @@ com.matibabu.backend
 ├── api
 │   └── patient
 │       ├── PatientController.java
-│       ├── CreatePatientRequest.java
+│       ├── RegisterPatientRequest.java
 │       ├── UpdatePatientRequest.java
 │       └── PatientResponse.java
 │
 ├── application
 │   └── patient
-│       ├── CreatePatientUseCase.java
+│       ├── RegisterPatientUseCase.java
 │       ├── GetPatientUseCase.java
+│       ├── SearchPatientByPhoneNumberUseCase.java
 │       ├── ListPatientsUseCase.java
-│       └── UpdatePatientUseCase.java
+│       ├── UpdatePatientUseCase.java
+│       ├── DeletePatientUseCase.java
+│       ├── PatientNotFoundException.java
+│       └── DuplicatePhoneNumberException.java
 │
 ├── domain
 │   └── patient
@@ -363,9 +387,10 @@ com.matibabu.backend
 │   └── persistence
 │       └── patient
 │           ├── PatientEntity.java
-│           ├── PatientJpaRepository.java
+│           ├── SpringDataPatientRepository.java
 │           └── PatientRepositoryAdapter.java
 │
 ├── security
 │
 └── synchronization
+```

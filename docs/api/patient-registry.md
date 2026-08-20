@@ -9,12 +9,12 @@
 A patient contains:
 
 - id: UUID
-- firstName: String
-- lastName: String
-- dateOfBirth: LocalDate
-- gender: Gender
-- phoneNumber: String
-- address: String
+- firstName: String (non-blank)
+- lastName: String (non-blank)
+- dateOfBirth: LocalDate (past or present)
+- gender: Gender (MALE, FEMALE, OTHER, UNKNOWN)
+- phoneNumber: String (unique, valid phone format: 7-15 digits with optional `+` prefix, e.g. `+254712345678`)
+- address: String (non-blank)
 - createdAt: Instant
 - updatedAt: Instant
 
@@ -37,6 +37,14 @@ Response:
 
 201 Created
 
+If validation fails:
+
+400 Bad Request
+
+If a patient with the same phone number already exists:
+
+409 Conflict
+
 ## Get Patient
 
 GET /api/patients/{id}
@@ -48,6 +56,24 @@ Response:
 Returns a Patient.
 
 If the patient does not exist:
+
+404 Not Found
+
+## Search Patient by Phone Number
+
+GET /api/patients/search?phoneNumber={phoneNumber}
+
+Response:
+
+200 OK
+
+Returns a Patient.
+
+If the phone number parameter is missing:
+
+400 Bad Request
+
+If no patient exists with the provided phone number:
 
 404 Not Found
 
@@ -79,6 +105,18 @@ Request:
 Response:
 
 200 OK
+
+If validation fails:
+
+400 Bad Request
+
+If the patient does not exist:
+
+404 Not Found
+
+If the phone number is already registered to another patient:
+
+409 Conflict
 
 ## Delete Patient
 

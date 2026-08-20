@@ -3,7 +3,7 @@ info:
   title: Matibabu EMR Lite API
   description: |
     REST API for the Matibabu Offline-First EMR Lite system.
-    Provides endpoints for patient registration, retrieval, listing, updates, and deletion.
+    Provides endpoints for patient registration, retrieval, search, listing, updates, and deletion.
   version: 1.0.0
   contact:
     name: Matibabu Development Team
@@ -60,6 +60,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationErrorResponse'
+        '409':
+          description: A patient with the specified phone number already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Patient with phone number already exists: +254712345678"
 
     get:
       tags:
@@ -135,6 +143,56 @@ paths:
                 numberOfElements: 1
                 first: true
                 empty: false
+
+  /api/patients/search:
+    get:
+      tags:
+        - Patients
+      summary: Search patient by phone number
+      description: Searches and retrieves a single patient record by their unique phone number.
+      operationId: searchPatientByPhoneNumber
+      parameters:
+        - name: phoneNumber
+          in: query
+          description: Unique contact phone number to search for
+          required: true
+          schema:
+            type: string
+            pattern: '^\+?[0-9]{7,15}$'
+          example: "+254712345678"
+      responses:
+        '200':
+          description: Patient retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientResponse'
+              example:
+                id: 018d3f1a-6379-7a0e-971c-fcae741cfb12
+                firstName: John
+                lastName: Kamau
+                dateOfBirth: "1995-06-15"
+                gender: MALE
+                phoneNumber: "+254712345678"
+                address: Nairobi
+                createdAt: "2026-08-20T12:00:00Z"
+                updatedAt: "2026-08-20T12:00:00Z"
+        '400':
+          description: Missing or invalid phone number query parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Parameter 'phoneNumber' is required"
+        '404':
+          description: No patient found with the specified phone number
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Patient not found with phone number: +254712345678"
 
   /api/patients/{id}:
     get:
@@ -238,6 +296,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 error: "Patient not found with id: 018d3f1a-6379-7a0e-971c-fcae741cfb12"
+        '409':
+          description: Phone number is already registered to another patient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Patient with phone number already exists: +254700000000"
 
     delete:
       tags:
@@ -306,7 +372,8 @@ components:
           $ref: '#/components/schemas/Gender'
         phoneNumber:
           type: string
-          description: Patient's contact phone number (must not be blank)
+          pattern: '^\+?[0-9]{7,15}$'
+          description: Patient's contact phone number (must be unique and valid: 7-15 digits with optional '+' prefix)
           example: "+254712345678"
         address:
           type: string
@@ -341,7 +408,8 @@ components:
           $ref: '#/components/schemas/Gender'
         phoneNumber:
           type: string
-          description: Patient's updated contact phone number (must not be blank)
+          pattern: '^\+?[0-9]{7,15}$'
+          description: Patient's updated contact phone number (must be unique and valid: 7-15 digits with optional '+' prefix)
           example: "+254700000000"
         address:
           type: string
