@@ -5,17 +5,19 @@ import com.matibabu.backend.domain.patient.Patient;
 import com.matibabu.backend.domain.patient.PatientRepository;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-public class RegisterPatientService implements RegisterPatientUseCase {
+public class UpdatePatientService implements UpdatePatientUseCase {
 
     private final PatientRepository patientRepository;
 
-    public RegisterPatientService(PatientRepository patientRepository) {
+    public UpdatePatientService(PatientRepository patientRepository) {
         this.patientRepository = patientRepository;
     }
 
     @Override
-    public Patient register(
+    public Patient update(
+            UUID id,
             String firstName,
             String lastName,
             LocalDate dateOfBirth,
@@ -23,7 +25,10 @@ public class RegisterPatientService implements RegisterPatientUseCase {
             String phoneNumber,
             String address
     ) {
-        Patient patient = new Patient(
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException(id));
+
+        patient.update(
                 firstName,
                 lastName,
                 dateOfBirth,

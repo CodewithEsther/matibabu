@@ -12,7 +12,7 @@ A patient contains:
 - firstName: String
 - lastName: String
 - dateOfBirth: LocalDate
-- sex: Sex
+- gender: Gender
 - phoneNumber: String
 - address: String
 - createdAt: Instant
@@ -28,7 +28,7 @@ Request:
 "firstName": "John",
 "lastName": "Kamau",
 "dateOfBirth": "1995-06-15",
-"sex": "MALE",
+"gender": "MALE",
 "phoneNumber": "+254712345678",
 "address": "Nairobi"
 }
@@ -71,7 +71,7 @@ Request:
 "firstName": "John",
 "lastName": "Kamau",
 "dateOfBirth": "1995-06-15",
-"sex": "MALE",
+"gender": "MALE",
 "phoneNumber": "+254700000000",
 "address": "Mombasa"
 }

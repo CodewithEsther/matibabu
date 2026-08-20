@@ -12,9 +12,11 @@ public record PatientResponse(
         String firstName,
         String lastName,
         LocalDate dateOfBirth,
+        Gender gender,
         String phoneNumber,
+        String address,
         Instant createdAt,
-        Gender gender
+        Instant updatedAt
 ) {
 
     public static PatientResponse from(Patient patient) {
@@ -23,9 +25,11 @@ public record PatientResponse(
                 patient.getFirstName(),
                 patient.getLastName(),
                 patient.getDateOfBirth(),
+                patient.getGender(),
                 patient.getPhoneNumber(),
+                patient.getAddress(),
                 patient.getCreatedAt(),
-                patient.getGender()
+                patient.getUpdatedAt()
         );
     }
 }

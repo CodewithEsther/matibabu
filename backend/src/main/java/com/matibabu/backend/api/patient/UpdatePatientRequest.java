@@ -7,7 +7,7 @@ import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
-public record RegisterPatientRequest(
+public record UpdatePatientRequest(
 
         @NotBlank
         String firstName,

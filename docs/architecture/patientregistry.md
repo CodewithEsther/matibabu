@@ -28,7 +28,7 @@ The initial patient record contains:
 - First name
 - Last name
 - Date of birth
-- Sex
+- Gender
 - Phone number
 - Address
 - Created timestamp
@@ -53,7 +53,7 @@ Input:
 - First name
 - Last name
 - Date of birth
-- Sex
+- Gender
 - Phone number
 - Address
 
@@ -353,7 +353,7 @@ com.matibabu.backend
 ├── domain
 │   └── patient
 │       ├── Patient.java
-│       ├── Sex.java
+│       ├── Gender.java
 │       └── PatientRepository.java
 │
 ├── infrastructure

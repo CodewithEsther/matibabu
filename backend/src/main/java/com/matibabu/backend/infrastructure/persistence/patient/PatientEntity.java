@@ -20,12 +20,16 @@ public class PatientEntity {
 
     private LocalDate dateOfBirth;
 
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     private String phoneNumber;
+
+    private String address;
 
     private Instant createdAt;
 
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private Instant updatedAt;
 
     protected PatientEntity() {
         // Required by JPA
@@ -63,12 +67,28 @@ public class PatientEntity {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Instant getCreatedAt() {
@@ -79,11 +99,11 @@ public class PatientEntity {
         this.createdAt = createdAt;
     }
 
-    public Gender getGender() {
-        return gender;
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

@@ -12,24 +12,29 @@ public class Patient {
     private String firstName;
     private String lastName;
     private LocalDate dateOfBirth;
-    private String phoneNumber;
-    private Instant createdAt;
     private Gender gender;
+    private String phoneNumber;
+    private String address;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     public Patient(
             String firstName,
             String lastName,
             LocalDate dateOfBirth,
+            Gender gender,
             String phoneNumber,
-            Gender gender
+            String address
     ) {
         this.uuid = UuidCreator.getTimeOrderedEpoch();
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
-        this.phoneNumber = phoneNumber;
         this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
         this.createdAt = Instant.now();
+        this.updatedAt = this.createdAt;
     }
 
     /*
@@ -40,22 +45,43 @@ public class Patient {
             String firstName,
             String lastName,
             LocalDate dateOfBirth,
-            String phoneNumber,
             Gender gender,
-            Instant createdAt
+            String phoneNumber,
+            String address,
+            Instant createdAt,
+            Instant updatedAt
     ) {
         Patient patient = new Patient(
                 firstName,
                 lastName,
                 dateOfBirth,
+                gender,
                 phoneNumber,
-                gender
+                address
         );
 
         patient.uuid = uuid;
         patient.createdAt = createdAt;
+        patient.updatedAt = updatedAt != null ? updatedAt : createdAt;
 
         return patient;
+    }
+
+    public void update(
+            String firstName,
+            String lastName,
+            LocalDate dateOfBirth,
+            Gender gender,
+            String phoneNumber,
+            String address
+    ) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.updatedAt = Instant.now();
     }
 
     // Getters
@@ -76,15 +102,23 @@ public class Patient {
         return dateOfBirth;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public Gender getGender() {
-        return gender;
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

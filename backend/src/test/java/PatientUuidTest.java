@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatientUuidTest {
 
@@ -14,8 +14,9 @@ class PatientUuidTest {
                 "Test",
                 "Patient",
                 LocalDate.of(2000, 1, 1),
+                Gender.MALE,
                 "0700000000",
-                Gender.MALE
+                "Nairobi"
         );
 
         assertEquals(7, patient.getId().version());
