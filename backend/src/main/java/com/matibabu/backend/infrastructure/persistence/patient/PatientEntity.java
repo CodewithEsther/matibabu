@@ -2,6 +2,8 @@ package com.matibabu.backend.infrastructure.persistence.patient;
 
 import com.matibabu.backend.domain.patient.Gender;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -12,6 +14,7 @@ import java.util.UUID;
 public class PatientEntity {
 
     @Id
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID id;
 
     private String firstName;

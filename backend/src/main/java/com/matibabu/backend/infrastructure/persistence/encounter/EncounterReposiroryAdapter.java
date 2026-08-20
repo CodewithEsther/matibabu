@@ -1,0 +1,31 @@
+package com.matibabu.backend.infrastructure.persistence.encounter;
+
+import com.matibabu.backend.domain.encounter.Encounter;
+import com.matibabu.backend.domain.encounter.EncounterRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public class EncounterReposiroryAdapter implements EncounterRepository {
+
+    private final SpringDataEncounterRepository jpaRepository;
+    private final EncounterMapper mapper;
+
+    public EncounterReposiroryAdapter(SpringDataEncounterRepository jpaRepository, EncounterMapper mapper) {
+        this.jpaRepository = jpaRepository;
+        this.mapper = mapper;
+    }
+
+
+    @Override
+    public Encounter save(Encounter encounter) {
+        return null;
+    }
+
+    @Override
+    public Optional<Encounter> findById(UUID id) {
+        return Optional.empty();
+    }
+}
