@@ -337,6 +337,35 @@ class PatientControllerIntegrationTest {
                 .andExpect(jsonPath("$.phoneNumber").value("+254788777666"))
                 .andExpect(jsonPath("$.address").value("Nyeri"));
 
+        // Search via query string with '+' decoded as space
+        mockMvc.perform(get("/api/patients/search")
+                        .param("phoneNumber", " 254788777666"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.phoneNumber").value("+254788777666"));
+
+        // Search without '+' prefix
+        mockMvc.perform(get("/api/patients/search")
+                        .param("phoneNumber", "254788777666"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.phoneNumber").value("+254788777666"));
+
+        // Search via Kenyan local format 07...
+        mockMvc.perform(get("/api/patients/search")
+                        .param("phoneNumber", "0788777666"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.phoneNumber").value("+254788777666"));
+
+        // Search via alternative query parameter names (phone, q, query)
+        mockMvc.perform(get("/api/patients/search")
+                        .param("phone", "+254788777666"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.phoneNumber").value("+254788777666"));
+
+        mockMvc.perform(get("/api/patients/search")
+                        .param("q", "+254788777666"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.phoneNumber").value("+254788777666"));
+
         // Search via path variable
         mockMvc.perform(get("/api/patients/phone/+254788777666"))
                 .andExpect(status().isOk())

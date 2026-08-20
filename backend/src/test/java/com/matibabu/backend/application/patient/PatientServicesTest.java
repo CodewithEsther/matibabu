@@ -275,10 +275,35 @@ class PatientServicesTest {
     }
 
     @Test
+    void searchByPhoneNumberHandlesLeadingSpaceDecodedPlus() {
+        Patient mockPatient = new Patient("John", "Kamau", LocalDate.of(1995, 6, 15), Gender.MALE, "+254712345678", "Nairobi");
+        when(patientRepository.findByPhoneNumber(" 254712345678")).thenReturn(Optional.empty());
+        when(patientRepository.findByPhoneNumber("254712345678")).thenReturn(Optional.empty());
+        when(patientRepository.findByPhoneNumber("+254712345678")).thenReturn(Optional.of(mockPatient));
+
+        Patient patient = searchPatientByPhoneNumberService.searchByPhoneNumber(" 254712345678");
+
+        assertNotNull(patient);
+        assertEquals("+254712345678", patient.getPhoneNumber());
+    }
+
+    @Test
+    void searchByPhoneNumberHandlesKenyanLocalFormat() {
+        Patient mockPatient = new Patient("John", "Kamau", LocalDate.of(1995, 6, 15), Gender.MALE, "+254712345678", "Nairobi");
+        when(patientRepository.findByPhoneNumber("0712345678")).thenReturn(Optional.empty());
+        when(patientRepository.findByPhoneNumber("+0712345678")).thenReturn(Optional.empty());
+        when(patientRepository.findByPhoneNumber("+254712345678")).thenReturn(Optional.of(mockPatient));
+
+        Patient patient = searchPatientByPhoneNumberService.searchByPhoneNumber("0712345678");
+
+        assertNotNull(patient);
+        assertEquals("+254712345678", patient.getPhoneNumber());
+    }
+
+    @Test
     void searchByPhoneNumberThrowsExceptionWhenNotFound() {
-        when(patientRepository.findByPhoneNumber("+254799999999")).thenReturn(Optional.empty());
+        when(patientRepository.findByPhoneNumber(anyString())).thenReturn(Optional.empty());
 
         assertThrows(PatientNotFoundException.class, () -> searchPatientByPhoneNumberService.searchByPhoneNumber("+254799999999"));
-        verify(patientRepository).findByPhoneNumber("+254799999999");
     }
 }

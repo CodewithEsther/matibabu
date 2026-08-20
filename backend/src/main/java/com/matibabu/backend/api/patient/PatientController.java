@@ -102,9 +102,11 @@ public class PatientController {
     @GetMapping("/search")
     public PatientResponse searchByPhoneNumber(
             @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
-            @RequestParam(value = "phone", required = false) String phone
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "q", required = false) String q,
+            @RequestParam(value = "query", required = false) String queryParam
     ) {
-        String query = phoneNumber != null ? phoneNumber : phone;
+        String query = phoneNumber != null ? phoneNumber : (phone != null ? phone : (q != null ? q : queryParam));
         if (query == null || query.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parameter 'phoneNumber' is required");
         }

@@ -373,7 +373,7 @@ components:
         phoneNumber:
           type: string
           pattern: '^\+?[0-9]{7,15}$'
-          description: Patient's contact phone number (must be unique and valid: 7-15 digits with optional '+' prefix)
+          description: "Patient's contact phone number (must be unique and valid: 7-15 digits with optional '+' prefix)"
           example: "+254712345678"
         address:
           type: string
@@ -409,7 +409,7 @@ components:
         phoneNumber:
           type: string
           pattern: '^\+?[0-9]{7,15}$'
-          description: Patient's updated contact phone number (must be unique and valid: 7-15 digits with optional '+' prefix)
+          description: "Patient's updated contact phone number (must be unique and valid: 7-15 digits with optional '+' prefix)"
           example: "+254700000000"
         address:
           type: string
