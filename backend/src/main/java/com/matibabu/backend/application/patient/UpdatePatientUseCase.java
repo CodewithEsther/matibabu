@@ -4,10 +4,12 @@ import com.matibabu.backend.domain.patient.Gender;
 import com.matibabu.backend.domain.patient.Patient;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-public interface RegisterPatientUseCase {
+public interface UpdatePatientUseCase {
 
-    Patient register(
+    Patient update(
+            UUID id,
             String firstName,
             String lastName,
             LocalDate dateOfBirth,

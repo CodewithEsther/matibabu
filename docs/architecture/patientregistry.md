@@ -28,8 +28,8 @@ The initial patient record contains:
 - First name
 - Last name
 - Date of birth
-- Sex
-- Phone number
+- Gender
+- Phone number (unique)
 - Address
 - Created timestamp
 - Updated timestamp
@@ -53,8 +53,8 @@ Input:
 - First name
 - Last name
 - Date of birth
-- Sex
-- Phone number
+- Gender
+- Phone number (unique)
 - Address
 
 Output:
@@ -62,6 +62,8 @@ Output:
 - Created patient
 - Generated patient ID
 - Creation timestamp
+
+If a patient with the given phone number already exists, the operation must fail with a conflict error (409).
 
 ---
 
@@ -79,6 +81,22 @@ Output:
 
 If the patient does not exist, the API must return an appropriate
 not-found response.
+
+---
+
+### Search patient by phone number
+
+Retrieve a patient using their unique phone number.
+
+Input:
+
+- Phone number
+
+Output:
+
+- Patient record
+
+If no patient exists with the provided phone number, the API must return an appropriate not-found response (404).
 
 ---
 
@@ -103,13 +121,18 @@ The updated timestamp must change when the patient is successfully updated.
 
 ### Delete patient
 
-Patient deletion must be treated as a controlled operation.
+Delete an existing patient record using the patient ID.
 
-The implementation must not physically delete clinical history that may
-depend on the patient.
+Input:
 
-The final deletion/archival strategy must be agreed upon before implementing
-this operation.
+- Patient ID
+
+Output:
+
+- No content (204)
+
+If the patient does not exist, the API must return an appropriate
+not-found response (404).
 
 ---
 
@@ -204,15 +227,14 @@ The PostgreSQL implementation must remain replaceable.
 
 ## 7. API Boundary
 
-The initial REST API is:
+The REST API is:
 
     POST   /api/patients
     GET    /api/patients/{id}
+    GET    /api/patients/search?phoneNumber={phoneNumber}
     GET    /api/patients
     PUT    /api/patients/{id}
-
-The DELETE endpoint will be finalized after the patient archival strategy
-has been agreed upon.
+    DELETE /api/patients/{id}
 
 ---
 
@@ -226,7 +248,8 @@ At minimum:
 - Date of birth must be a valid date.
 - Date of birth must not be in the future.
 - Patient ID must be valid when supplied in a path.
-- Phone number must follow the project's agreed format.
+- Phone number must follow the project's agreed format (`^\+?[0-9]{7,15}$`).
+- Phone number must be unique across all registered patients.
 
 Validation rules must be consistent across the backend.
 
@@ -339,30 +362,35 @@ com.matibabu.backend
 ├── api
 │   └── patient
 │       ├── PatientController.java
-│       ├── CreatePatientRequest.java
+│       ├── RegisterPatientRequest.java
 │       ├── UpdatePatientRequest.java
 │       └── PatientResponse.java
 │
 ├── application
 │   └── patient
-│       ├── CreatePatientUseCase.java
+│       ├── RegisterPatientUseCase.java
 │       ├── GetPatientUseCase.java
+│       ├── SearchPatientByPhoneNumberUseCase.java
 │       ├── ListPatientsUseCase.java
-│       └── UpdatePatientUseCase.java
+│       ├── UpdatePatientUseCase.java
+│       ├── DeletePatientUseCase.java
+│       ├── PatientNotFoundException.java
+│       └── DuplicatePhoneNumberException.java
 │
 ├── domain
 │   └── patient
 │       ├── Patient.java
-│       ├── Sex.java
+│       ├── Gender.java
 │       └── PatientRepository.java
 │
 ├── infrastructure
 │   └── persistence
 │       └── patient
 │           ├── PatientEntity.java
-│           ├── PatientJpaRepository.java
+│           ├── SpringDataPatientRepository.java
 │           └── PatientRepositoryAdapter.java
 │
 ├── security
 │
 └── synchronization
+```
