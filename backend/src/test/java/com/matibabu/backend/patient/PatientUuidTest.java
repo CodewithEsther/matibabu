@@ -1,3 +1,5 @@
+package com.matibabu.backend.patient;
+
 import com.matibabu.backend.domain.patient.Gender;
 import com.matibabu.backend.domain.patient.Patient;
 import org.junit.jupiter.api.Test;
