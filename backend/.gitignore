@@ -37,3 +37,4 @@ build/
 *.sqlite
 *.sqlite3
 matibabu-local.db
+backend/src/main/resources/application-local.properties
