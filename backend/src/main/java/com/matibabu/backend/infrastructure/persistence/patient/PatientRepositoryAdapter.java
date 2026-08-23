@@ -10,10 +10,10 @@ import java.util.UUID;
 @Repository
 public class PatientRepositoryAdapter implements PatientRepository {
 
-    private final SoringDataPatientRepository jpaRepository;
+    private final SpringDataPatientRepository jpaRepository;
     private final PatientMapper mapper;
 
-    public PatientRepositoryAdapter(SoringDataPatientRepository jpaRepository, PatientMapper mapper) {
+    public PatientRepositoryAdapter(SpringDataPatientRepository jpaRepository, PatientMapper mapper) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
     }
