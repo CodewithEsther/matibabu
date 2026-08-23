@@ -1,4 +1,7 @@
-> This document adapts the principles from the [Logos Brand Guidelines](https://guide.logos.co/) to the Matibabu healthcare information system. It is not a Logos sub-brand document; it uses the Logos philosophy of clarity, function, and accessibility as a starting point for Matibabu's own design direction.
+> Scope: Visual design, branding, and UI conventions for the Matibabu healthcare information system.
+> Applies to: `frontend/**/*.tsx`, `frontend/**/*.css`, and any design decisions.
+
+This document adapts the principles from the [Logos Brand Guidelines](https://guide.logos.co/) to Matibabu. It is not a Logos sub-brand document; it uses the Logos philosophy of clarity, function, and accessibility as a starting point for Matibabu's own design direction.
 
 # Matibabu Design Direction
 
