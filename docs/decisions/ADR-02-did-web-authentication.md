@@ -51,6 +51,55 @@ Spring Boot backend
   ↓ issues JWT access token (and optional refresh token)
 ```
 
+## Private keys, public keys, and wallets
+
+### What is a private key?
+
+A private key is a large random number. In Cardano, it is a 256-bit value. Whoever knows the private key can prove ownership of the corresponding identity and sign messages on its behalf.
+
+### How is a private key created?
+
+Private keys are generated from randomness. When a wallet is created:
+
+1. A random seed is generated.
+2. That seed is converted into a master private key using a deterministic key derivation algorithm.
+3. The wallet derives one or more child private keys for different accounts or addresses.
+
+The randomness is designed to be unpredictable. The chance of two people ever generating the same private key is astronomically low — lower than the chance of guessing a specific atom in the observable universe.
+
+### Why does everyone have a unique private key?
+
+Because the key space is enormous. A 256-bit key has approximately 1.15 × 10^77 possible values. For context, there are roughly 10^80 atoms in the observable universe. Even if billions of wallets were created every second for billions of years, collisions would still be practically impossible.
+
+This uniqueness is what makes public-key cryptography viable for identity. We do not need a central registry to guarantee that your key is different from everyone else's.
+
+### How does utxos.dev fit in?
+
+utxos.dev provides a non-custodial wallet. This means:
+
+- The private key is generated inside the user's device or browser.
+- utxos.dev does not store the private key on its servers.
+- The user controls the key, usually protected by a password, PIN, biometrics, or social-login-backed key recovery.
+
+When the user authenticates to Matibabu, the frontend asks the utxos.dev wallet to sign the backend's nonce. The private key never leaves the wallet.
+
+### Public keys and DIDs
+
+From a private key, a public key is derived mathematically. It is safe to share the public key — it cannot be used to discover the private key.
+
+The `did:web` document publishes the public key. When the backend resolves the DID, it gets the public key and uses it to verify the signature. In this way:
+
+- The private key stays with the user.
+- The public key is public.
+- The DID document links the identifier to the public key.
+- The signature proves the user controls the private key.
+
+### Security implications
+
+- If a user loses their private key, they may lose access to their identity. Recovery mechanisms are the responsibility of the wallet provider.
+- If a private key is stolen, the attacker can impersonate the user. This is why the wallet protects the key with authentication.
+- Matibabu never sees or stores the private key. It only sees signatures and public keys.
+
 ## Backend requirements
 
 The backend must provide the following capabilities.
