@@ -116,6 +116,25 @@ Open decision: which local library to use. Options include:
 
 Network-based verification (external APIs like Blockfrost or Koios, or a separate microservice) is intentionally out of scope. Healthcare authentication should not depend on a third-party network call every time someone logs in.
 
+#### Purpose
+
+The signature verifier proves that the user owns the private key associated with their `did:web` identifier. The backend knows the user's public key from the resolved DID document. By signing the backend's nonce with their private key, the user demonstrates control of that key. The verifier checks whether the signature, message, and public key are cryptographically consistent.
+
+This replaces the password check in traditional authentication.
+
+#### Performance
+
+Local signature verification is fast and should not make signup or login slow. It is a pure cryptographic operation, typically measured in milliseconds.
+
+| Step | Typical speed | Notes |
+|---|---|---|
+| Resolve `did:web` document | 50–300 ms | HTTPS network call; the only network step |
+| Verify signature | 1–10 ms | Local cryptographic operation |
+| Create or look up user identity | 5–20 ms | Database write or read |
+| Issue JWT | <1 ms | Local signing |
+
+The DID resolution is the only network-dependent step. To reduce repeated network calls, the backend may cache resolved DID documents for a short period (e.g., 5 minutes).
+
 ### 4. Auth controller
 
 Add an auth controller with two endpoints:
