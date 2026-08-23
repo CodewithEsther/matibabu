@@ -4,8 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { registerPatient } from "@/lib/api/patients";
 import { Gender, RegisterPatientRequest } from "@/types/patient";
+import Button from "./Button";
+import Input from "./Input";
 
-const GENDERS: Gender[] = ["MALE", "FEMALE", "OTHER", "UNKNOWN"];
+const GENDERS: Array<{ value: Gender; label: string }> = [
+  { value: "MALE", label: "Male" },
+  { value: "FEMALE", label: "Female" },
+  { value: "OTHER", label: "Other" },
+  { value: "UNKNOWN", label: "Unknown" },
+];
 
 export default function RegisterPatientForm() {
   const router = useRouter();
@@ -37,94 +44,64 @@ export default function RegisterPatientForm() {
   return (
     <form action={handleSubmit} className="space-y-4">
       {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+        <div
+          className="rounded-md border border-error bg-error-bg p-3 text-sm text-error"
+          role="alert"
+        >
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="firstName" className="block text-sm font-medium">
-            First name
-          </label>
-          <input
-            id="firstName"
-            name="firstName"
-            type="text"
-            required
-            className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          />
-        </div>
+        <Input
+          label="First name"
+          name="firstName"
+          type="text"
+          required
+          autoComplete="given-name"
+        />
 
-        <div>
-          <label htmlFor="lastName" className="block text-sm font-medium">
-            Last name
-          </label>
-          <input
-            id="lastName"
-            name="lastName"
-            type="text"
-            required
-            className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          />
-        </div>
+        <Input
+          label="Last name"
+          name="lastName"
+          type="text"
+          required
+          autoComplete="family-name"
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="dateOfBirth" className="block text-sm font-medium">
-            Date of birth
-          </label>
-          <input
-            id="dateOfBirth"
-            name="dateOfBirth"
-            type="date"
-            required
-            className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="phoneNumber" className="block text-sm font-medium">
-            Phone number
-          </label>
-          <input
-            id="phoneNumber"
-            name="phoneNumber"
-            type="tel"
-            required
-            placeholder="+254712345678"
-            className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="gender" className="block text-sm font-medium">
-          Gender
-        </label>
-        <select
-          id="gender"
-          name="gender"
+        <Input
+          label="Date of birth"
+          name="dateOfBirth"
+          type="date"
           required
-          className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-        >
-          <option value="">Select gender</option>
-          {GENDERS.map((gender) => (
-            <option key={gender} value={gender}>
-              {gender.charAt(0) + gender.slice(1).toLowerCase()}
-            </option>
-          ))}
-        </select>
+        />
+
+        <Input
+          label="Phone number"
+          name="phoneNumber"
+          type="tel"
+          required
+          placeholder="+254712345678"
+          autoComplete="tel"
+        />
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-      >
+      <Input
+        label="Gender"
+        name="gender"
+        type="select"
+        required
+        options={[
+          { value: "", label: "Select gender" },
+          ...GENDERS,
+        ]}
+      />
+
+      <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Registering..." : "Register patient"}
-      </button>
+      </Button>
     </form>
   );
 }
