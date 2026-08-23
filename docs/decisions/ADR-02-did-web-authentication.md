@@ -29,15 +29,11 @@ Matibabu will use `did:web` identifiers and Cardano wallet signatures for authen
 - Identifiers can be anchored to domains the project already controls.
 - It is simpler to operate than blockchain-based DID methods such as `did:ada`.
 
-### Why not SIWE?
-
-SIWE is Ethereum-specific. Because the wallet layer is Cardano, the auth flow will use a Cardano message-signing challenge instead of SIWE.
-
 ## Authentication flow
 
 ```text
 User
-  ↓ clicks "Connect wallet"
+  ↓ clicks "Sign In"
 Next.js frontend
   ↓ utxos.dev SDK creates/loads Cardano wallet
   ↓ frontend derives or registers did:web for the user
@@ -105,11 +101,14 @@ The verifier must:
 - Return a boolean indicating whether the signature is valid.
 - Be implemented using a well-maintained Cardano or Ed25519 library.
 
-Open decision: which library to use. Options include:
+Open decision: which library or service to use. Options include:
 
-- `cardano-client-lib` (Java).
-- Bouncy Castle with manual CIP-8 parsing.
-- A small verification microservice in another language.
+- `cardano-client-lib` (Java) — pure local verification, no network call.
+- Bouncy Castle with manual CIP-8 parsing — pure local verification, no network call.
+- A small verification microservice in another language — requires a network call to the service.
+- An external API such as Blockfrost or Koios — requires a network call to a third party.
+
+Note: signature verification is a pure cryptographic operation. A network call is only required if the verification is outsourced to an external service or microservice.
 
 ### 4. Auth controller
 
