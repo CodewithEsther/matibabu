@@ -8,9 +8,19 @@ Proposed
 
 2026-08-23
 
+## Proposed by
+
+Ian Njuguna
+
 ## Context
 
-Matibabu needs an authentication mechanism for the web frontend and future mobile clients. Because the project is exploring decentralised identity, the system should allow users (patients and providers) to authenticate without relying on a centralised username/password database.
+Matibabu needs an authentication mechanism for the web frontend and future mobile clients. A decentralised identity approach offers several benefits over a traditional username/password database:
+
+- **User control:** patients and providers own their private keys, so they control their own identities rather than relying on Matibabu to manage passwords.
+- **No centralised credential database:** the backend never stores passwords or secrets, reducing the attack surface and removing a common breach target.
+- **Portable identity:** a user can authenticate from any device or client that supports their wallet, without Matibabu needing to maintain session state per device.
+- **Verifiable authentication:** every login is backed by cryptographic proof, not a shared secret stored in a database.
+- **Reduced operational burden:** there are no password resets, no credential leaks to notify users about, and no need for password hashing infrastructure.
 
 After evaluating several options, the team wants to use:
 
