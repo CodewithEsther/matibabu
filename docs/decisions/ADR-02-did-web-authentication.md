@@ -95,20 +95,26 @@ The service must:
 
 Create a service that verifies Cardano wallet signatures.
 
+The user signs the auth challenge with their Cardano wallet from utxos.dev. That signature is not a generic Ed25519 signature — it follows Cardano message signing standards (CIP-8 / CIP-30).
+
 The verifier must:
 
 - Accept a signature, a message (the nonce), and a public key.
 - Return a boolean indicating whether the signature is valid.
 - Be implemented using a well-maintained Cardano or Ed25519 library.
 
-Open decision: which library or service to use. Options include:
+Signature verification is a pure cryptographic operation: the backend has the public key from the DID document, the message (nonce), and the signature from the wallet. A local library can verify this combination without any network call.
 
-- `cardano-client-lib` (Java) — pure local verification, no network call.
-- Bouncy Castle with manual CIP-8 parsing — pure local verification, no network call.
-- A small verification microservice in another language — requires a network call to the service.
-- An external API such as Blockfrost or Koios — requires a network call to a third party.
+Open decision: which local library to use. Options include:
 
-Note: signature verification is a pure cryptographic operation. A network call is only required if the verification is outsourced to an external service or microservice.
+| Option | Pros | Cons |
+|---|---|---|
+| `cardano-client-lib` (Java) | Native Java, no external service | Adds dependency, must keep updated |
+| Bouncy Castle for raw Ed25519 | Lightweight | You must manually parse the CIP-8 structure |
+
+**Recommendation:** use `cardano-client-lib` if it supports CIP-8/CIP-30 message signing. Fall back to Bouncy Castle only if the Cardano library proves too heavy or incomplete.
+
+Network-based verification (external APIs like Blockfrost or Koios, or a separate microservice) is intentionally out of scope. Healthcare authentication should not depend on a third-party network call every time someone logs in.
 
 ### 4. Auth controller
 
@@ -212,12 +218,31 @@ When a user authenticates for the first time, the system creates a new identity 
 - Users must have a wallet; this may create friction for non-technical users.
 - If the `did:web` host is unavailable, authentication fails.
 
+## Decisions made
+
+1. **Signature verification** — use a local Java library. Prefer `cardano-client-lib` if it supports CIP-8/CIP-30; fall back to Bouncy Castle with manual CIP-8 parsing. Network-based verification is out of scope.
+
 ## Open decisions
 
-1. Which Java or external library will verify Cardano signatures?
-2. What should the JWT access token expiry be?
-3. Should the system issue refresh tokens, or require wallet re-signing?
-4. Will providers use `did:web` anchored to their own domains, or to a Matibabu subdomain?
+1. What should the JWT access token expiry be?
+
+   Options:
+
+   - 15 minutes — secure, but users re-authenticate often.
+   - 1 hour — common for healthcare dashboards.
+   - 24 hours — convenient, but risky if stolen.
+
+2. Should the system issue refresh tokens, or require wallet re-signing?
+
+   Options:
+
+   - **No refresh tokens** — user must sign a new challenge with their wallet. Most decentralised, but annoying.
+   - **Long-lived refresh token** — backend issues a refresh token; frontend silently gets new access tokens. Better UX, more like Clerk/Auth0.
+   - **Session cookie** — traditional web session; less "decentralised" but simple.
+
+   For a healthcare app, wallet signing every 15 minutes is probably unacceptable. Refresh tokens are likely the right choice.
+
+3. Will providers use `did:web` anchored to their own domains, or to a Matibabu subdomain?
 
 ## Related decisions
 

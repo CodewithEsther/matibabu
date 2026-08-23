@@ -83,22 +83,30 @@ https://matibabu.co/patients/alice/did.json
 
 The authentication flow requires the backend to verify a Cardano wallet signature against a challenge nonce.
 
+The user signs the challenge with their utxos.dev wallet, so the signature follows Cardano message signing standards (CIP-8 / CIP-30). It is not a generic Ed25519 signature.
+
 **Requirements:**
 
 - Create a `SignatureVerifier` service or utility.
 - Accept a signature, a message (the nonce), and a public key.
 - Return a boolean indicating validity.
-- Use a well-maintained Cardano or Ed25519 library.
+- Use a local Java library — no network calls to external APIs or microservices.
 
-**Open decision:**
+**Library options:**
 
-Which library should we use? Options:
+| Option | Pros | Cons |
+|---|---|---|
+| `cardano-client-lib` (Java) | Native Java, no external service | Adds dependency, must keep updated |
+| Bouncy Castle for raw Ed25519 | Lightweight | You must manually parse the CIP-8 structure |
 
-- `cardano-client-lib` (Java)
-- Bouncy Castle with manual CIP-8 parsing
-- A dedicated verification microservice in another language
+**Recommendation:** start with `cardano-client-lib` if it supports CIP-8/CIP-30. Fall back to Bouncy Castle only if the Cardano library is too heavy or incomplete.
 
-Please comment with a recommendation before implementing.
+**Acceptance criteria:**
+
+- The verifier returns `true` for a valid signature and `false` for an invalid one.
+- Verification happens locally without network calls.
+- Unit tests cover both valid and invalid signatures.
+- Comment on the chosen library before opening the pull request.
 
 **Acceptance criteria:**
 
@@ -310,26 +318,29 @@ Please comment with a recommendation.
 
 **Body:**
 
-The backend needs to verify Cardano wallet signatures. We need to pick a library or service.
+The backend needs to verify Cardano wallet signatures locally. The signature comes from a utxos.dev wallet and follows CIP-8 / CIP-30 message signing standards.
 
 **Options:**
 
 1. **cardano-client-lib** (Java)
    - Native Java.
+   - No network calls.
    - Adds a dependency that must be maintained.
 
 2. **Bouncy Castle** with manual CIP-8 parsing
    - Lightweight.
+   - No network calls.
    - Requires understanding the CIP-8 message structure.
 
-3. **Verification microservice** in another language
-   - Could use well-maintained Rust/TypeScript Cardano libraries.
-   - Adds an extra service to run.
+**Out of scope:**
 
-4. **External API** (e.g., Blockfrost, Koios)
-   - No crypto code in backend.
-   - Adds network dependency and privacy concerns.
+- External APIs such as Blockfrost or Koios.
+- Separate verification microservices.
 
-Please comment with a recommendation and rationale.
+Healthcare authentication should not depend on a third-party network call every time someone logs in.
+
+**Recommendation:** start with `cardano-client-lib`. Use Bouncy Castle only as a fallback.
+
+Please comment with the final choice and rationale.
 
 **Related:** ADR-02
