@@ -26,7 +26,10 @@ The backend is designed around clean architecture principles: domain logic is ke
 
 ### Frontend
 
-Not implemented yet. A web frontend will be added to this repository and consume the backend REST API at `http://localhost:8080/api`.
+- Next.js 16 (App Router)
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
 
 ## Project layout
 
@@ -42,6 +45,11 @@ matibabu/
 │   └── src/main/resources/
 │       ├── application*.properties
 │       └── db/migration/ # Flyway migrations
+├── frontend/         # Next.js web application
+│   ├── src/app/      # App Router pages
+│   ├── src/components/   # React components
+│   ├── src/lib/api/  # Backend API clients
+│   └── src/types/    # Shared TypeScript types
 ├── database/         # Shared/local database files
 ├── docs/             # Architecture docs and ADRs
 └── README.md
@@ -50,6 +58,7 @@ matibabu/
 ## Prerequisites
 
 - JDK 25 (the Maven wrapper will use it automatically)
+- Node.js 22+ and npm (for the frontend)
 - A web browser or HTTP client (curl, Postman, etc.) for testing the API
 
 ## Start the backend
@@ -60,6 +69,18 @@ cd backend
 ```
 
 The application starts on `http://localhost:8080`.
+
+### Start the frontend
+
+The backend must be running first.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend starts on `http://localhost:3000`.
 
 I verified this works by packaging and running the application locally:
 
@@ -145,7 +166,7 @@ Valid values for `gender`:
 1. **Field naming** — the current API uses `gender` and `phoneNumber`. The `docs/api/patient-registry.md` document mentions `sex` and `address`, but those are not exposed in the current implementation.
 2. **Database vs API fields** — the database migrations include additional patient fields (`national_id`, `medical_record_number`, `email`, `residence`, emergency contacts, blood group, insurance, `is_active`, `updated_at`), but these are not yet available through the API.
 3. **Encounters** — the `Encounter` domain model and repository exist, but there is no HTTP controller yet. Do not build UI screens around encounters until the API endpoints are added.
-4. **CORS** — if the frontend runs on a separate dev server (e.g., Vite on `localhost:5173`), you may need to configure CORS in the backend. Ask before implementing; the project does not have CORS configured yet.
+4. **CORS** — the backend allows cross-origin requests from `http://localhost:3000` in the local profile. If you change the frontend origin, update `backend/src/main/java/com/matibabu/backend/config/WebConfiguration.java`.
 5. **No authentication** — the API is currently open. Auth will be added later.
 
 ## Run tests
