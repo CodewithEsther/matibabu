@@ -19,6 +19,9 @@ target/
 *.iml
 *.ipr
 
+# Local SQLite databases
+*.db
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

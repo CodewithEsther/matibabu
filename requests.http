@@ -1,0 +1,29 @@
+### GET Public endpoint - no login required
+GET http://localhost:8080/
+
+### GET Obtain CSRF token to add to headers for other requests
+GET http://localhost:8080/csrf
+
+### POST Register New User - no login required
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+X-XSRF-TOKEN: pE2x_SlJJXaTRZnVy1aVsC1c1fi1-FV_U05xsiJc6qGWLZRIlHyAzU8rEEC-d_zh-nuh0hw_-JnTnGNSMX1AghNqjMCgH6J_
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+### POST Login with registered user
+POST http://localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+X-XSRF-TOKEN: pE2x_SlJJXaTRZnVy1aVsC1c1fi1-FV_U05xsiJc6qGWLZRIlHyAzU8rEEC-d_zh-nuh0hw_-JnTnGNSMX1AghNqjMCgH6J_
+
+email=user@example.com&password=password123
+
+### USER ENDPOINT - USER + ADMIN - Login Required
+GET http://localhost:8080/api/user
+
+
+### ADMIN ENDPOINT - ADMIN ONLY - Login Required
+GET http://localhost:8080/api/admin
