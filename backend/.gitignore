@@ -21,6 +21,8 @@ target/
 
 # Local SQLite databases
 *.db
+*.sqlite
+*.sqlite3
 
 ### NetBeans ###
 /nbproject/private/
