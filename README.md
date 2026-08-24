@@ -221,10 +221,11 @@ backend/src/main/resources/db/migration/
 
 Current migrations include:
 
-V20260817090000__create_patients_table.sql
-V20260817120000__create_encounters_table.sql
-V20260821100000__add_patient_details.sql
-V20260821110000__add_encounter_created_at.sql
+V1__create_patients_table.sql
+V2__create_encounters_table.sql
+V3__add_patient_details.sql
+V4__add_encounter_created_at.sql
+V5__rename_residence_to_address.sql
 
 Migrations are applied automatically when the application starts.
 
