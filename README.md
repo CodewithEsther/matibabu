@@ -1,124 +1,181 @@
-# Matibabu
+Matibabu
 
-Matibabu is a modular healthcare information system. This repository contains the backend infrastructure and will also host the web frontend.
+Matibabu is a modular healthcare information system for managing patient registration and clinical encounters. The project is being developed with a Java/Spring Boot backend and a Next.js web frontend, with the backend designed around Clean Architecture principles.
 
-The backend is designed around clean architecture principles: domain logic is kept independent of frameworks, databases, and transport layers so the system can evolve from a local SQLite setup to a networked PostgreSQL deployment without rewriting the core healthcare concepts.
+The system is designed to keep core healthcare domain logic independent from frameworks, databases, and transport layers, allowing the persistence and delivery mechanisms to evolve without rewriting the underlying domain.
 
-## What is being built
+«Status: Active development. Patient registration and retrieval are currently implemented. Additional clinical, authentication, and synchronization capabilities are planned.»
 
-- **Patient registry** — register and look up patients.
-- **Encounters** — episodes of care tied to a patient (domain model exists; HTTP API is not exposed yet).
-- **Future modules** — medical records, DHIS2 integration, offline/online synchronization, authentication, and authorization.
+What is currently implemented
 
-## Tech stack
+Patient Registry
 
-### Backend
+- Register patients through a REST API.
+- Retrieve individual patients by UUID.
+- Validate and map API requests through DTOs.
+- Persist patient data using JPA/Hibernate.
+- Manage database schema changes through Flyway migrations.
+- Support SQLite for local development.
+- PostgreSQL is the target database for remote/production deployments.
+
+Encounters
+
+The core "Encounter" domain model and repository are in place. HTTP endpoints for encounters have not yet been exposed.
+
+Roadmap
+
+Planned functionality includes:
+
+- Medical records and clinical data
+- Encounter management APIs
+- Authentication and authorization
+- Offline/online synchronization
+- DHIS2 integration
+- Expanded patient management
+- Production deployment and operational tooling
+
+Tech Stack
+
+Backend
 
 - Java 25
 - Spring Boot 4.1.0
-- Spring Data JPA + Hibernate
-- SQLite for local development
-- PostgreSQL for production/remote deployment
-- Flyway for database migrations
-- MapStruct for object mapping
-- UUID v7 for entity identifiers
-- Maven (wrapper included)
+- Spring Data JPA / Hibernate
+- SQLite — local development
+- PostgreSQL — target remote/production database
+- Flyway — database migrations
+- MapStruct — DTO/entity mapping
+- UUID v7 — entity identifiers
+- Maven — build and dependency management
 
-### Frontend
+Frontend
 
-- Next.js 16 (App Router)
+- Next.js 16 — App Router
 - React 19
 - TypeScript 5
 - Tailwind CSS 4
 
-## Project layout
+Project Structure
 
-```text
 matibabu/
-├── backend/          # Spring Boot application
+├── backend/
 │   ├── src/main/java/com/matibabu/backend/
-│   │   ├── api/          # HTTP controllers and DTOs
-│   │   ├── application/  # Use cases and application services
-│   │   ├── config/       # Spring bean composition
-│   │   ├── domain/       # Domain models and repository interfaces
-│   │   └── infrastructure/   # Persistence adapters, JPA entities
+│   │   ├── api/              # HTTP controllers and DTOs
+│   │   ├── application/      # Use cases and application services
+│   │   ├── config/           # Spring configuration and bean composition
+│   │   ├── domain/           # Domain models and repository interfaces
+│   │   └── infrastructure/   # Persistence adapters and JPA entities
+│   │
 │   └── src/main/resources/
 │       ├── application*.properties
-│       └── db/migration/ # Flyway migrations
-├── frontend/         # Next.js web application
-│   ├── src/app/      # App Router pages
-│   ├── src/components/   # React components
-│   ├── src/lib/api/  # Backend API clients
-│   └── src/types/    # Shared TypeScript types
-├── database/         # Shared/local database files
-├── docs/             # Architecture docs and ADRs
+│       └── db/migration/     # Flyway database migrations
+│
+├── frontend/
+│   ├── src/app/              # Next.js App Router
+│   ├── src/components/       # Reusable UI components
+│   ├── src/lib/api/          # Backend API clients
+│   └── src/types/            # TypeScript types
+│
+├── database/                 # Local/shared database files
+├── docs/
+│   ├── architecture/         # Architecture documentation
+│   └── decisions/            # Architecture Decision Records
+│
 └── README.md
-```
 
-## Prerequisites
+Architecture
 
-- JDK 25 (the Maven wrapper will use it automatically)
-- Node.js 22+ and npm (for the frontend)
-- A web browser or HTTP client (curl, Postman, etc.) for testing the API
+The backend follows a Clean Architecture approach. Dependencies point inward toward the domain rather than allowing the domain to depend on frameworks or infrastructure.
 
-## Start the backend
+┌──────────────────────────────┐
+│       API / Controllers      │
+│       HTTP + DTOs            │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│      Application Layer       │
+│    Use Cases + Services      │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│         Domain Layer         │
+│ Models + Repository Ports    │
+└──────────────▲───────────────┘
+               │
+               │
+┌──────────────┴───────────────┐
+│      Infrastructure          │
+│ JPA + Database + Adapters    │
+└──────────────────────────────┘
 
-```bash
+The domain layer has no direct knowledge of Spring, JPA, HTTP, or the database implementation.
+
+Additional architectural documentation and ADRs are available under "docs/".
+
+Getting Started
+
+Prerequisites
+
+- JDK 25
+- Node.js 22+
+- npm
+- A web browser or HTTP client such as "curl" or Postman
+
+The Maven wrapper is included in the repository.
+
+Start the Backend
+
 cd backend
 ./mvnw spring-boot:run
-```
 
-The application starts on `http://localhost:8080`.
+The backend starts on:
 
-### Start the frontend
+http://localhost:8080
 
-The backend must be running first.
+Start the Frontend
 
-```bash
+Start the backend first, then:
+
 cd frontend
 npm install
 npm run dev
-```
 
-The frontend starts on `http://localhost:3000`.
+The frontend starts on:
 
-I verified this works by packaging and running the application locally:
+http://localhost:3000
 
-```bash
-cd backend
-./mvnw package -DskipTests
-java -jar target/backend-0.0.1-SNAPSHOT.jar
-```
+Configuration
 
-### Configuration
+The default active Spring profile is "local".
 
-The active profile is `local` by default (`spring.profiles.active=local`).
+The local configuration:
 
-`backend/src/main/resources/application-local.properties`:
+- Uses SQLite for development.
+- Stores the local database in "./matibabu-local.db".
+- Runs Flyway migrations automatically.
+- Enables SQL logging for development.
 
-- Uses a local SQLite file at `./matibabu-local.db`
-- Runs Flyway migrations automatically
-- Prints SQL to the console (`spring.jpa.show-sql=true`)
+For a remote/production environment, configure the "prod" profile with the appropriate PostgreSQL connection details.
 
-For production, create or switch to the `prod` profile and provide PostgreSQL credentials.
+API
 
-## API overview
+Base URL:
 
-Base URL: `http://localhost:8080`
+http://localhost:8080
 
-### Patients
+Patient Registry
 
-| Method | Endpoint | Status | Description |
-|--------|----------|--------|-------------|
-| POST | `/api/patients` | ✅ Implemented | Register a new patient |
-| GET | `/api/patients/{id}` | ✅ Implemented | Get a patient by UUID |
-| GET | `/api/patients?page=0&size=20` | ❌ Not implemented | List patients |
-| PUT | `/api/patients/{id}` | ❌ Not implemented | Update a patient |
-| DELETE | `/api/patients/{id}` | ❌ Not implemented | Delete/archive a patient |
+Method| Endpoint| Status| Description
+"POST"| "/api/patients"| ✅ Implemented| Register a patient
+"GET"| "/api/patients/{id}"| ✅ Implemented| Retrieve a patient by UUID
+"GET"| "/api/patients?page=0&size=20"| 🚧 Planned| List patients
+"PUT"| "/api/patients/{id}"| 🚧 Planned| Update a patient
+"DELETE"| "/api/patients/{id}"| 🚧 Planned| Delete/archive a patient
 
-### Register a patient
+Register a Patient
 
-```bash
 curl -X POST http://localhost:8080/api/patients \
   -H "Content-Type: application/json" \
   -d '{
@@ -128,11 +185,9 @@ curl -X POST http://localhost:8080/api/patients \
     "phoneNumber": "+254712345678",
     "gender": "MALE"
   }'
-```
 
-Response (`201 Created`):
+Example response:
 
-```json
 {
   "id": "019185c3-...",
   "firstName": "John",
@@ -142,69 +197,78 @@ Response (`201 Created`):
   "createdAt": "2026-08-22T04:20:49.743Z",
   "gender": "MALE"
 }
-```
 
-### Get a patient
+Retrieve a Patient
 
-```bash
 curl http://localhost:8080/api/patients/{id}
-```
 
-Returns `200 OK` with the patient, or `404 Not Found` if the ID does not exist.
+The endpoint returns "200 OK" when the patient exists and "404 Not Found" when the supplied UUID cannot be found.
 
-### Gender values
+Gender Values
 
-Valid values for `gender`:
+The API currently accepts:
 
-- `MALE`
-- `FEMALE`
-- `OTHER`
-- `UNKNOWN`
+- "MALE"
+- "FEMALE"
+- "OTHER"
+- "UNKNOWN"
 
-## Important notes for frontend development
+Database Migrations
 
-1. **Field naming** — the current API uses `gender` and `phoneNumber`. The `docs/api/patient-registry.md` document mentions `sex` and `address`, but those are not exposed in the current implementation.
-2. **Database vs API fields** — the database migrations include additional patient fields (`national_id`, `medical_record_number`, `email`, `residence`, emergency contacts, blood group, insurance, `is_active`, `updated_at`), but these are not yet available through the API.
-3. **Encounters** — the `Encounter` domain model and repository exist, but there is no HTTP controller yet. Do not build UI screens around encounters until the API endpoints are added.
-4. **CORS** — the backend allows cross-origin requests from `http://localhost:3000` in the local profile. If you change the frontend origin, update `backend/src/main/java/com/matibabu/backend/config/WebConfiguration.java`.
-5. **No authentication** — the API is currently open. Auth will be added later.
+Flyway migrations are located at:
 
-## Run tests
+backend/src/main/resources/db/migration/
 
-```bash
+Current migrations include:
+
+V20260817090000__create_patients_table.sql
+V20260817120000__create_encounters_table.sql
+V20260821100000__add_patient_details.sql
+V20260821110000__add_encounter_created_at.sql
+
+Migrations are applied automatically when the application starts.
+
+Frontend Development Notes
+
+The frontend currently consumes only the API functionality that has been implemented.
+
+Important API/domain considerations:
+
+1. The current API uses "gender" and "phoneNumber".
+2. Some fields present in the database schema are not yet exposed through the patient API.
+3. The "Encounter" domain model exists, but there are currently no HTTP endpoints for encounters.
+4. The local backend permits requests from "http://localhost:3000".
+5. If the frontend origin changes, update the CORS configuration in:
+
+backend/src/main/java/com/matibabu/backend/config/WebConfiguration.java
+
+6. Authentication and authorization have not yet been implemented.
+
+Testing
+
+Run the backend test suite with:
+
 cd backend
 ./mvnw test
-```
 
-## Database migrations
+The application can also be packaged with:
 
-Migrations live in `backend/src/main/resources/db/migration/` and run automatically on startup.
+./mvnw package
 
-Current migrations:
+Build Verification
 
-- `V20260817090000__create_patients_table.sql`
-- `V20260817120000__create_encounters_table.sql`
-- `V20260821100000__add_patient_details.sql`
-- `V20260821110000__add_encounter_created_at.sql`
+The application has been verified locally by packaging and running the generated JAR:
 
-## Architecture
+cd backend
+./mvnw package -DskipTests
+java -jar target/backend-0.0.1-SNAPSHOT.jar
 
-The backend follows a layered/clean architecture:
+Development Status
 
-```text
-API (controllers, DTOs)
-    ↓
-Application (use cases, services)
-    ↓
-Domain (entities, value objects, repository interfaces)
-    ↑
-Infrastructure (JPA, adapters, external APIs)
-```
+Matibabu is an active software-engineering project. The current implementation focuses on establishing the backend architecture, persistence layer, database migrations, and initial patient-registry functionality before expanding into additional healthcare modules.
 
-Dependencies point toward the domain. The domain has no knowledge of Spring, JPA, HTTP, or the database.
+The project intentionally documents functionality that is not yet implemented rather than presenting planned features as completed.
 
-See `docs/architecture/` and `docs/decisions/` for the full architecture overview and ADRs.
+License
 
-## License
-
-See `LICENSE`.
+See ""LICENSE"" (LICENSE) for licensing information.
