@@ -3,11 +3,9 @@ package com.matibabu.backend.application.patient;
 import com.matibabu.backend.domain.patient.Gender;
 import com.matibabu.backend.domain.patient.Patient;
 import com.matibabu.backend.domain.patient.PatientRepository;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
-@Service
 public class RegisterPatientService implements RegisterPatientUseCase {
 
     private final PatientRepository patientRepository;
@@ -21,15 +19,21 @@ public class RegisterPatientService implements RegisterPatientUseCase {
             String firstName,
             String lastName,
             LocalDate dateOfBirth,
+            Gender gender,
             String phoneNumber,
-            Gender gender
+            String address
     ) {
+        if (patientRepository.existsByPhoneNumber(phoneNumber)) {
+            throw new DuplicatePhoneNumberException(phoneNumber);
+        }
+
         Patient patient = new Patient(
                 firstName,
                 lastName,
                 dateOfBirth,
+                gender,
                 phoneNumber,
-                gender
+                address
         );
 
         return patientRepository.save(patient);

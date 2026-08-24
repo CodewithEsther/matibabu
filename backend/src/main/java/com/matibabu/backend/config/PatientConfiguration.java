@@ -1,9 +1,6 @@
 package com.matibabu.backend.config;
 
-import com.matibabu.backend.application.patient.GetPatientService;
-import com.matibabu.backend.application.patient.GetPatientUseCase;
-import com.matibabu.backend.application.patient.RegisterPatientService;
-import com.matibabu.backend.application.patient.RegisterPatientUseCase;
+import com.matibabu.backend.application.patient.*;
 import com.matibabu.backend.domain.patient.PatientRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,5 +20,33 @@ public class PatientConfiguration {
             PatientRepository patientRepository
     ) {
         return new GetPatientService(patientRepository);
+    }
+
+    @Bean
+    public ListPatientsUseCase listPatientsUseCase(
+            PatientRepository patientRepository
+    ) {
+        return new ListPatientsService(patientRepository);
+    }
+
+    @Bean
+    public UpdatePatientUseCase updatePatientUseCase(
+            PatientRepository patientRepository
+    ) {
+        return new UpdatePatientService(patientRepository);
+    }
+
+    @Bean
+    public DeletePatientUseCase deletePatientUseCase(
+            PatientRepository patientRepository
+    ) {
+        return new DeletePatientService(patientRepository);
+    }
+
+    @Bean
+    public SearchPatientByPhoneNumberUseCase searchPatientByPhoneNumberUseCase(
+            PatientRepository patientRepository
+    ) {
+        return new SearchPatientByPhoneNumberService(patientRepository);
     }
 }

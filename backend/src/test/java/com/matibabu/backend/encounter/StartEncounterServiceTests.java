@@ -1,0 +1,103 @@
+package com.matibabu.backend.encounter;
+
+import com.matibabu.backend.application.encounter.StartEncounterService;
+import com.matibabu.backend.domain.encounter.Encounter;
+import com.matibabu.backend.domain.encounter.EncounterRepository;
+import com.matibabu.backend.domain.encounter.EncounterStatus;
+import org.junit.jupiter.api.Test;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class StartEncounterServiceTest {
+
+    /*
+     * Simple in-memory implementation of EncounterRepository.
+     *
+     * This allows us to test the application service without
+     * connecting to a DB.
+     */
+    private static class InMemoryEncounterRepository
+            implements EncounterRepository {
+
+        private final Map<UUID, Encounter> encounters = new HashMap<>();
+
+        @Override
+        public Encounter save(Encounter encounter) {
+            encounters.put(encounter.getId(), encounter);
+            return encounter;
+        }
+
+        @Override
+        public Optional<Encounter> findById(UUID id) {
+            return Optional.ofNullable(encounters.get(id));
+        }
+    }
+
+    /*
+     * Verifies that starting an encounter:
+     *
+     * 1. Creates an Encounter.
+     * 2. Generates an ID.
+     * 3. Associates it with the correct patient.
+     * 4. Starts it as ACTIVE.
+     * 5. Preserves the supplied start time.
+     * 6. Saves it through the repository.
+     */
+    @Test
+    void shouldStartAndSaveEncounter() {
+
+        UUID patientId = UUID.randomUUID();
+
+        Instant startedAt =
+                Instant.parse("2026-08-20T10:00:00Z");
+
+        // Create the repository used by the application service.
+        InMemoryEncounterRepository repository =
+                new InMemoryEncounterRepository();
+
+        // Create the application service.
+        StartEncounterService service =
+                new StartEncounterService(repository);
+
+        // Execute the start encounter use case.
+        Encounter encounter =
+                service.start(patientId, startedAt);
+
+        // The encounter should have a generated ID.
+        assertNotNull(encounter.getId());
+
+        // The correct patient should be associated with the encounter.
+        assertEquals(patientId, encounter.getPatientId());
+
+        // The encounter should start as ACTIVE.
+        assertEquals(
+                EncounterStatus.ACTIVE,
+                encounter.getStatus()
+        );
+
+        // The supplied start time should be preserved.
+        assertEquals(
+                startedAt,
+                encounter.getStartedAt()
+        );
+
+        // An active encounter should not have an end time.
+        assertNull(encounter.getEndedAt());
+
+        // Verify that the service actually saved the encounter.
+        Encounter savedEncounter =
+                repository.findById(encounter.getId())
+                        .orElseThrow();
+
+        assertEquals(
+                encounter.getId(),
+                savedEncounter.getId()
+        );
+    }
+}

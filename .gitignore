@@ -2,12 +2,18 @@
 .idea/
 *.iml
 
+# VS Code
+.vscode/
+
 # Maven
 backend/target/
 
 # Environment / secrets
 .env
 *.env
+
+# Local development databases
+backend/matibabu-local.db
 
 # Logs
 *.log
@@ -16,5 +22,9 @@ backend/target/
 .DS_Store
 Thumbs.db
 
-# Local SQLite databases
+# Database / SQLite local databases
 *.db
+*.sqlite
+*.sqlite3
+matibabu-local.db
+backend/matibabu-local.db

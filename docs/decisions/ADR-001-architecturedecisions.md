@@ -128,7 +128,7 @@ as their identifier.
 
 A new Patient generates its identifier using:
 
-UUID.randomUUID()
+UuidCreator.getTimeOrderedEpoch();
 
 The UUID is persisted as the entity's ID.
 

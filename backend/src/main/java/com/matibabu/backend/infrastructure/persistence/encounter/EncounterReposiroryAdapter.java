@@ -13,19 +13,26 @@ public class EncounterReposiroryAdapter implements EncounterRepository {
     private final SpringDataEncounterRepository jpaRepository;
     private final EncounterMapper mapper;
 
-    public EncounterReposiroryAdapter(SpringDataEncounterRepository jpaRepository, EncounterMapper mapper) {
+    public EncounterReposiroryAdapter(
+            SpringDataEncounterRepository jpaRepository,
+            EncounterMapper mapper
+    ) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
     }
 
-
     @Override
     public Encounter save(Encounter encounter) {
-        return null;
+        EncounterEntity entity = mapper.toEntity(encounter);
+
+        EncounterEntity savedEntity = jpaRepository.save(entity);
+
+        return mapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Encounter> findById(UUID id) {
-        return Optional.empty();
+        return jpaRepository.findById(id)
+                .map(mapper::toDomain);
     }
 }

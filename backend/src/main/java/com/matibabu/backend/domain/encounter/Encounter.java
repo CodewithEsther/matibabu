@@ -30,7 +30,7 @@ public class Encounter {
         this.status = EncounterStatus.ACTIVE;
         this.endedAt = null;
     }
-
+  //start an encounter
     public static Encounter start( UUID patientId, Instant now) {
         UUID encounterId = UuidCreator.getTimeOrderedEpoch();
         return new Encounter(
@@ -39,7 +39,7 @@ public class Encounter {
                 now
         );
     }
-
+    //discharge an encounter
     public void discharge(Instant now) {
         ensureActive();
 
@@ -54,7 +54,8 @@ public class Encounter {
         this.status = EncounterStatus.DISCHARGED;
         this.endedAt = now;
     }
-
+    //cancel an encounter
+    //TODO handle cancellation constraints
     public void cancel(Instant now) {
         ensureActive();
 
@@ -69,7 +70,7 @@ public class Encounter {
         this.status = EncounterStatus.CANCELLED;
         this.endedAt = now;
     }
-
+    //check if a discharge is active
     private void ensureActive() {
         if (status != EncounterStatus.ACTIVE) {
             throw new IllegalStateException(
@@ -77,7 +78,7 @@ public class Encounter {
             );
         }
     }
-
+//getters
     public UUID getId() {
         return id;
     }
@@ -97,7 +98,7 @@ public class Encounter {
     public Instant getEndedAt() {
         return endedAt;
     }
-
+ //if an encounter exists, reconstitute using existing data
     public static Encounter reconstitute(
             UUID id,
             UUID patientId,

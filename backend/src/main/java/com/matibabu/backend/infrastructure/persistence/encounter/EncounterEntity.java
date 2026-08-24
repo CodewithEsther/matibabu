@@ -28,6 +28,8 @@ public class EncounterEntity {
     protected EncounterEntity(){
         //required by JPA
     }
+
+
     //setters
 
     public void setId(UUID id) {
@@ -48,6 +50,8 @@ public class EncounterEntity {
     public void setEndedAt(Instant endedAt) {
         this.endedAt = endedAt;
     }
+
+
     //getters
     public UUID getId() {
         return id;

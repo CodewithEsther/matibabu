@@ -11,7 +11,8 @@ public interface RegisterPatientUseCase {
             String firstName,
             String lastName,
             LocalDate dateOfBirth,
+            Gender gender,
             String phoneNumber,
-            Gender gender
+            String address
     );
 }
