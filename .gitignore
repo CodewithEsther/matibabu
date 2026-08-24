@@ -2,12 +2,18 @@
 .idea/
 *.iml
 
+# VS Code
+.vscode/
+
 # Maven
 backend/target/
 
 # Environment / secrets
 .env
 *.env
+
+# Local development databases
+backend/matibabu-local.db
 
 # Logs
 *.log
