@@ -7,6 +7,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 
 public class Diagnosis {
     private UUID id;
+    private UUID medicalRecordId;
     private String description;
     private DiagnosisType type;
     private Instant recordedAt;
@@ -16,6 +17,7 @@ public class Diagnosis {
             DiagnosisType type
     ) {
         this.id = UuidCreator.getTimeOrderedEpoch();
+        this.medicalRecordId = medicalRecordId;
         this.description = description;
         this.type = type;
         this.recordedAt = Instant.now();
@@ -24,6 +26,11 @@ public class Diagnosis {
     public UUID getId() {
         return id;
     }
+
+    public UUID getMedicalRecordId() {
+        return medicalRecordId;
+    }
+
 
     public String getDescription() {
         return description;

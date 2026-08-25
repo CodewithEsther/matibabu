@@ -8,17 +8,23 @@ import java.util.UUID;
 public class Treatment {
 
     private UUID id;
+     private UUID medicalRecordId;
     private String description;
     private Instant prescribedAt;
 
     public Treatment(String description) {
         this.id = UuidCreator.getTimeOrderedEpoch();
+        this.medicalRecordId = medicalRecordId;
         this.description = description;
         this.prescribedAt = Instant.now();
     }
 
     public UUID getId() {
         return id;
+    }
+
+    public UUID getMedicalRecordId() {
+        return medicalRecordId;
     }
 
     public String getDescription() {

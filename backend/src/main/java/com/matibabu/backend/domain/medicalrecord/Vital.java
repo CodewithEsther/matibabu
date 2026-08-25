@@ -8,17 +8,20 @@ import java.util.UUID;
 public class Vital {
 
     private UUID id;
+    private UUID medicalRecordId;
     private VitalType type;
     private String value;
     private String unit;
     private Instant recordedAt;
 
     public Vital(
-            VitalType type,
-            String value,
-            String unit
+        UUID medicalRecordId,
+        VitalType type,
+        String value,
+        String unit
     ) {
         this.id = UuidCreator.getTimeOrderedEpoch();
+        this.medicalRecordId = medicalRecordId;
         this.type = type;
         this.value = value;
         this.unit = unit;
@@ -28,6 +31,11 @@ public class Vital {
     public UUID getId() {
         return id;
     }
+
+    public UUID getMedicalRecordId() {
+        return medicalRecordId;
+    }
+
 
     public VitalType getType() {
         return type;
