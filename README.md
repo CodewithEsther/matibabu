@@ -41,6 +41,7 @@ Backend
 - Java 25
 - Spring Boot 4.1.0
 - Spring Data JPA / Hibernate
+- Spring Security
 - SQLite — local development
 - PostgreSQL — target remote/production database
 - Flyway — database migrations
