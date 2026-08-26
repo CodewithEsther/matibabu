@@ -12,6 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "medicalrecords")
 public class MedicalRecordEntity {
+
     @Id
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID id;
@@ -19,10 +20,15 @@ public class MedicalRecordEntity {
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID patientId;
 
+    // Links this medical record to the encounter
+    // during which it was created.
+    @JdbcTypeCode(SqlTypes.CHAR)
+    private UUID encounterId;
+
     private Instant createdAt;
 
-    protected MedicalRecordEntity(){
-        //required by jpa
+    protected MedicalRecordEntity() {
+        // Required by JPA
     }
 
     public void setId(UUID id) {
@@ -33,10 +39,13 @@ public class MedicalRecordEntity {
         this.patientId = patientId;
     }
 
-    public void setStartedAt(Instant startedAt) {
-        this.createdAt = createdAt;
+    public void setEncounterId(UUID encounterId) {
+        this.encounterId = encounterId;
     }
 
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public UUID getId() {
         return id;
@@ -44,6 +53,10 @@ public class MedicalRecordEntity {
 
     public UUID getPatientId() {
         return patientId;
+    }
+
+    public UUID getEncounterId() {
+        return encounterId;
     }
 
     public Instant getCreatedAt() {

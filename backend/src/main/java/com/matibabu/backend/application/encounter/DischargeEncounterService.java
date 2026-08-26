@@ -28,6 +28,7 @@ public class DischargeEncounterService implements DischargeEncounterUseCase {
                         );
 
         // The domain controls whether the encounter can be discharged.
+        
         encounter.discharge(now);
 
         // Persist updated encounter.

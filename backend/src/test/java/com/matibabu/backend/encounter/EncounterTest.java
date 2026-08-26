@@ -1,6 +1,7 @@
 package com.matibabu.backend.encounter;
 
 import com.matibabu.backend.domain.encounter.Encounter;
+import com.matibabu.backend.domain.encounter.EncounterNotActiveException;
 import com.matibabu.backend.domain.encounter.EncounterStatus;
 import org.junit.jupiter.api.Test;
 
@@ -157,7 +158,7 @@ class EncounterTest {
 
         // Attempting to discharge it again should fail.
         assertThrows(
-                IllegalStateException.class,
+                EncounterNotActiveException.class,
                 () -> encounter.discharge(dischargedAt)
         );
     }
@@ -194,7 +195,7 @@ class EncounterTest {
 
         // Cancellation after discharge must be rejected.
         assertThrows(
-                IllegalStateException.class,
+                EncounterNotActiveException.class,
                 () -> encounter.cancel(dischargedAt)
         );
     }

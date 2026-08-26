@@ -1,4 +1,4 @@
-package com.matibabu.backend.patient;
+package com.matibabu.backend.application.patient;
 
 import com.matibabu.backend.domain.patient.Gender;
 import com.matibabu.backend.domain.patient.Patient;

@@ -73,7 +73,7 @@ public class Encounter {
     //check if a discharge is active
     private void ensureActive() {
         if (status != EncounterStatus.ACTIVE) {
-            throw new IllegalStateException(
+            throw new EncounterNotActiveException(
                     "Encounter is no longer active"
             );
         }

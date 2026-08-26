@@ -5,6 +5,7 @@ import com.matibabu.backend.domain.medicalrecord.MedicalRecord;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface GetMedicalRecordUseCase{
-    Optional<MedicalRecord> get (UUID id);
+public interface GetMedicalRecordUseCase {
+
+    Optional<MedicalRecord> getByEncounterId(UUID encounterId);
 }

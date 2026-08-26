@@ -1,4 +1,3 @@
-
 package com.matibabu.backend.application.medicalrecord;
 
 import com.matibabu.backend.domain.medicalrecord.MedicalRecord;
@@ -13,12 +12,16 @@ public class GetMedicalRecordService implements GetMedicalRecordUseCase {
 
     private final MedicalRecordRepository medicalRecordRepository;
 
-    public GetMedicalRecordService(MedicalRecordRepository medicalRecordRepository) {
+    public GetMedicalRecordService(
+            MedicalRecordRepository medicalRecordRepository
+    ) {
         this.medicalRecordRepository = medicalRecordRepository;
     }
 
     @Override
-    public Optional<MedicalRecord> get(UUID id) {
-        return medicalRecordRepository.findById(id);
+    public Optional<MedicalRecord> getByEncounterId(UUID encounterId) {
+
+        // Find the medical record belonging to this encounter.
+        return medicalRecordRepository.findByEncounterId(encounterId);
     }
 }
