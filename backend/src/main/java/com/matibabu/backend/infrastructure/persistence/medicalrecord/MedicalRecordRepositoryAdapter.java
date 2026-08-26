@@ -9,13 +9,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class MedicalRecordsRepositoryAdapter implements MedicalRecordRepository {
+public class MedicalRecordRepositoryAdapter implements MedicalRecordRepository {
 
     private final SpringDataMedicalRecordsRepository jpaRepository;
     private final MedicalRecordMapper mapper;
 
-    public MedicalRecordsRepositoryAdapter(SpringDataMedicalRecordsRepository jpaRepository,
-                                           MedicalRecordMapper mapper) {
+    public MedicalRecordRepositoryAdapter(SpringDataMedicalRecordsRepository jpaRepository,
+                                          MedicalRecordMapper mapper) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
     }
@@ -38,5 +38,11 @@ public class MedicalRecordsRepositoryAdapter implements MedicalRecordRepository 
         return jpaRepository.findByPatientId(patientId).stream()
                 .map(mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Optional<MedicalRecord> findByEncounterId(UUID encounterId) {
+        return jpaRepository.findByEncounterId(encounterId)
+                .map(mapper::toDomain);
     }
 }

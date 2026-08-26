@@ -4,7 +4,6 @@ import com.matibabu.backend.application.encounter.CancelEncounterUseCase;
 import com.matibabu.backend.application.encounter.DischargeEncounterUseCase;
 import com.matibabu.backend.application.encounter.GetEncounterUseCase;
 import com.matibabu.backend.application.encounter.StartEncounterUseCase;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,14 +38,14 @@ public class EncounterController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/{patientId}")
     @ResponseStatus(HttpStatus.CREATED)
     public EncounterResponse start(
-            @Valid @RequestBody StartEncounterRequest request
+            @PathVariable UUID patientId
     ) {
         return EncounterResponse.from(
                 startEncounterUseCase.start(
-                        request.patientId(),
+                        patientId,
                         Instant.now()
                 )
         );
