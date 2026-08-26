@@ -27,7 +27,6 @@ public class AuthController {
     public ResponseEntity<?> register(
             @Valid @RequestBody RegistrationRequest registrationRequest) {
 
-        System.out.println(">>> REGISTRATION CONTROLLER REACHED");
         try {
             Clinician clinician = clinicianService.registerClinician(registrationRequest);
 

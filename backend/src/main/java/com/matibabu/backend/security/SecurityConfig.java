@@ -1,6 +1,7 @@
 package com.matibabu.backend.security;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +12,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
+@ConditionalOnProperty(
+        name = "app.security.enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 public class SecurityConfig {
 
     // URLs that don't require login
@@ -30,8 +36,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println(">>> MY SECURITY CONFIG IS LOADED <<<");
-
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -70,34 +74,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//
-//        http
-//                .csrf(csrf -> csrf
-//                        .csrfTokenRepository(
-//                                CookieCsrfTokenRepository.withHttpOnlyFalse()
-//                        )
-//                )
-//                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-//                        .requestMatchers("/auth/register").permitAll()
-//                        .requestMatchers("/").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .formLogin(formLogin -> formLogin
-//                        .loginProcessingUrl("/login")
-//                        .usernameParameter("email")
-//                        .passwordParameter("password")
-//                        .successHandler((request, response, authentication) ->
-//                                response.setStatus(HttpServletResponse.SC_OK))
-//                        .failureHandler((request, response, exception) ->
-//                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
-//                )
-//                .httpBasic(AbstractHttpConfigurer::disable);
-//
-//        return http.build();
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -38,8 +38,5 @@ build/
 .vscode/
 
 # Database / SQLite local databases
-*.db
-*.sqlite
-*.sqlite3
 matibabu-local.db
 backend/src/main/resources/application-local.properties

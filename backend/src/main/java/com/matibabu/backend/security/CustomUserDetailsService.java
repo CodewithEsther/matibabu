@@ -24,7 +24,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         Clinician clinician = clinicianRepository.findByEmail(username)
                 .orElseThrow(() -> new UserNotFoundException("Clinician not found"));
 
-        System.out.println("Looking up user: " + clinician.getEmail());
         return new CustomUserDetails(clinician);
     }
 }
