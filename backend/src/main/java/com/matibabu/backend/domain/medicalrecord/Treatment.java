@@ -12,7 +12,9 @@ public class Treatment {
     private String description;
     private Instant prescribedAt;
 
-    public Treatment(String description) {
+    public Treatment(
+        UUID medicalRecordId,
+        String description) {
         this.id = UuidCreator.getTimeOrderedEpoch();
         this.medicalRecordId = medicalRecordId;
         this.description = description;

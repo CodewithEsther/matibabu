@@ -1,10 +1,17 @@
 package com.matibabu.backend.api.medicalrecord;
 
+import com.matibabu.backend.application.medicalrecord.AddClinicalObservation;
+import com.matibabu.backend.application.medicalrecord.AddDiagnosis;
+import com.matibabu.backend.application.medicalrecord.AddTreatment;
+import com.matibabu.backend.application.medicalrecord.AddVital;
 import com.matibabu.backend.application.medicalrecord.CreateMedicalRecordUseCase;
 import com.matibabu.backend.application.medicalrecord.GetMedicalRecordUseCase;
 import com.matibabu.backend.application.medicalrecord.MedicalRecordNotFoundException;
+import com.matibabu.backend.domain.medicalrecord.DiagnosisType;
 import com.matibabu.backend.domain.medicalrecord.MedicalRecord;
+import com.matibabu.backend.domain.medicalrecord.VitalType;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -15,21 +22,29 @@ public class MedicalRecordController {
 
     private final CreateMedicalRecordUseCase createMedicalRecordUseCase;
     private final GetMedicalRecordUseCase getMedicalRecordUseCase;
+    private final AddVital addVital;
+    private final AddClinicalObservation addClinicalObservation;
+    private final AddDiagnosis addDiagnosis;
+    private final AddTreatment addTreatment;
 
     public MedicalRecordController(
             CreateMedicalRecordUseCase createMedicalRecordUseCase,
-            GetMedicalRecordUseCase getMedicalRecordUseCase
+            GetMedicalRecordUseCase getMedicalRecordUseCase,
+            AddVital addVital,
+            AddClinicalObservation addClinicalObservation,
+            AddDiagnosis addDiagnosis,
+            AddTreatment addTreatment
     ) {
         this.createMedicalRecordUseCase = createMedicalRecordUseCase;
         this.getMedicalRecordUseCase = getMedicalRecordUseCase;
+        this.addVital = addVital;
+        this.addClinicalObservation = addClinicalObservation;
+        this.addDiagnosis = addDiagnosis;
+        this.addTreatment = addTreatment;
     }
 
     /*
      * Creates a medical record for an existing encounter.
-     *
-     * The encounterId comes from the URL.
-     * The service is responsible for finding the encounter
-     * and obtaining the patientId associated with it.
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -44,9 +59,6 @@ public class MedicalRecordController {
 
     /*
      * Retrieves the medical record belonging to an encounter.
-     *
-     * The repository returns Optional because an encounter
-     * may exist without having a medical record yet.
      */
     @GetMapping
     public MedicalRecordResponse get(
@@ -59,5 +71,106 @@ public class MedicalRecordController {
                         () -> new MedicalRecordNotFoundException(encounterId)
                 );
     }
-}
 
+    /*
+     * Adds a vital to the medical record belonging to the encounter.
+     */
+    @PostMapping("/vitals")
+    public ResponseEntity<MedicalRecordResponse> addVital(
+            @PathVariable UUID encounterId,
+            @RequestParam VitalType type,
+            @RequestParam String value,
+            @RequestParam String unit
+    ) {
+        MedicalRecord medicalRecord =
+                getMedicalRecordUseCase
+                        .getByEncounterId(encounterId)
+                        .orElseThrow(
+                                () -> new MedicalRecordNotFoundException(encounterId)
+                        );
+
+        MedicalRecord updated =
+                addVital.execute(
+                        medicalRecord.getId(),
+                        type,
+                        value,
+                        unit
+                );
+
+        return ResponseEntity.ok(MedicalRecordResponse.from(updated));
+    }
+
+    /*
+     * Adds a clinical observation to the medical record.
+     */
+    @PostMapping("/observations")
+    public ResponseEntity<MedicalRecordResponse> addObservation(
+            @PathVariable UUID encounterId,
+            @RequestParam String description
+    ) {
+        MedicalRecord medicalRecord =
+                getMedicalRecordUseCase
+                        .getByEncounterId(encounterId)
+                        .orElseThrow(
+                                () -> new MedicalRecordNotFoundException(encounterId)
+                        );
+
+        MedicalRecord updated =
+                addClinicalObservation.execute(
+                        medicalRecord.getId(),
+                        description
+                );
+
+        return ResponseEntity.ok(MedicalRecordResponse.from(updated));
+    }
+
+    /*
+     * Adds a diagnosis to the medical record.
+     */
+    @PostMapping("/diagnoses")
+    public ResponseEntity<MedicalRecordResponse> addDiagnosis(
+            @PathVariable UUID encounterId,
+            @RequestParam String description,
+            @RequestParam DiagnosisType type
+    ) {
+        MedicalRecord medicalRecord =
+                getMedicalRecordUseCase
+                        .getByEncounterId(encounterId)
+                        .orElseThrow(
+                                () -> new MedicalRecordNotFoundException(encounterId)
+                        );
+
+        MedicalRecord updated =
+                addDiagnosis.execute(
+                        medicalRecord.getId(),
+                        description,
+                        type
+                );
+
+        return ResponseEntity.ok(MedicalRecordResponse.from(updated));
+    }
+
+    /*
+     * Adds a treatment to the medical record.
+     */
+    @PostMapping("/treatments")
+    public ResponseEntity<MedicalRecordResponse> addTreatment(
+            @PathVariable UUID encounterId,
+            @RequestParam String description
+    ) {
+        MedicalRecord medicalRecord =
+                getMedicalRecordUseCase
+                        .getByEncounterId(encounterId)
+                        .orElseThrow(
+                                () -> new MedicalRecordNotFoundException(encounterId)
+                        );
+
+        MedicalRecord updated =
+                addTreatment.execute(
+                        medicalRecord.getId(),
+                        description
+                );
+
+        return ResponseEntity.ok(MedicalRecordResponse.from(updated));
+    }
+}

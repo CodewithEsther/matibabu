@@ -13,8 +13,9 @@ public class Diagnosis {
     private Instant recordedAt;
 
     public Diagnosis(
-            String description,
-            DiagnosisType type
+        UUID medicalRecordId,
+        String description,
+        DiagnosisType type
     ) {
         this.id = UuidCreator.getTimeOrderedEpoch();
         this.medicalRecordId = medicalRecordId;
